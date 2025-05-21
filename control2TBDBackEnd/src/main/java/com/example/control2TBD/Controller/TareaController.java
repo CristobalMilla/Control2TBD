@@ -1,0 +1,60 @@
+package com.example.control2TBD.Controller;
+
+import com.example.control2TBD.Entity.TareaEntity;
+import com.example.control2TBD.Service.TareaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/tareas")
+public class TareaController {
+
+    private final TareaService tareaService;
+
+    @Autowired
+    public TareaController(TareaService tareaService) {
+        this.tareaService = tareaService;
+    }
+
+    // Crear Tarea
+    @PostMapping
+    public void createTarea(@RequestBody TareaEntity tarea) {
+        tareaService.createTarea(tarea);
+    }
+
+    // Editar Tarea
+    @PutMapping("/{id}")
+    public void updateTarea(@PathVariable("id") int id, @RequestBody TareaEntity tarea) {
+        tarea.setId_tarea(id);
+        tareaService.updateTarea(tarea);
+    }
+
+    // Eliminar Tarea
+    @DeleteMapping("/{id}")
+    public void deleteTarea(@PathVariable("id") int id) {
+        tareaService.deleteTarea(id);
+    }
+
+    // Marcar Tarea como Completada
+    @PutMapping("/{id}/complete")
+    public void markTareaCompleted(@PathVariable("id") int id) {
+        tareaService.markTareaCompleted(id);
+    }
+
+    // Obtener lista de todas las tareas
+    @GetMapping
+    public List<TareaEntity> getAllTareas(@RequestParam(value = "estado", required = false) String estado) {
+        if(estado != null) {
+            return tareaService.getTareasByEstado(estado);
+        }
+        return tareaService.getAllTareas();
+    }
+
+    // Obtener tarea por Id
+    @GetMapping("/{id}")
+    public TareaEntity getTareaById(@PathVariable("id") int id) {
+        return tareaService.getTareaById(id);
+    }
+}

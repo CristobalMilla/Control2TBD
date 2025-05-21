@@ -1,0 +1,50 @@
+--Provicional, ya que se usa GEOGRAPHY 4326 por ahora (Hasta tener bien claro cual usar)
+-- Activar la extensión PostGIS
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+-- Tabla de usuarios
+CREATE TABLE usuario (
+    id_usuario SERIAL PRIMARY KEY,
+    nickname VARCHAR(20) NOT NULL,
+    contrasenia VARCHAR(20) NOT NULL,
+    ubicacion GEOGRAPHY(POINT, 4326),
+    rol VARCHAR(10) NOT NULL
+);
+
+-- Tabla de sectores
+CREATE TABLE sector (
+    id_sector SERIAL PRIMARY KEY,
+    ubicacion GEOGRAPHY(POLYGON, 4326)
+);
+
+-- Tabla de tareas
+CREATE TABLE tarea (
+    id_tarea SERIAL PRIMARY KEY,
+    titulo VARCHAR(20) NOT NULL,
+    descripcion VARCHAR(50),
+    fecha_vencimiento DATE NOT NULL,
+    id_usuario INT NOT NULL,
+    id_sector INT NOT NULL,
+    estado VARCHAR(10) NOT NULL,
+    CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+    CONSTRAINT fk_sector FOREIGN KEY (id_sector) REFERENCES sector(id_sector)
+);
+
+-- Inserción de datos de prueba para la tabla de usuarios
+INSERT INTO usuario (nickname, contrasenia, ubicacion, rol)
+VALUES 
+  ('juan', 'secreto', ST_GeogFromText('SRID=4326;POINT(-70.6506 -33.4372)'), 'USER'),
+  ('maria', 'password', ST_GeogFromText('SRID=4326;POINT(-70.6500 -33.4400)'), 'ADMIN');
+
+-- Inserción de datos de prueba para la tabla de sectores
+INSERT INTO sector (ubicacion)
+VALUES 
+  (ST_GeogFromText('SRID=4326;POLYGON((-70.6500 -33.4372, -70.6510 -33.4372, -70.6510 -33.4382, -70.6500 -33.4382, -70.6500 -33.4372))')),
+  (ST_GeogFromText('SRID=4326;POLYGON((-70.6490 -33.4360, -70.6500 -33.4360, -70.6500 -33.4370, -70.6490 -33.4370, -70.6490 -33.4360))'));
+
+-- Inserción de datos de prueba para la tabla de tareas
+INSERT INTO tarea (titulo, descripcion, fecha_vencimiento, id_usuario, id_sector, estado)
+VALUES 
+  ('Tarea 1', 'Descripción de la tarea 1', '2025-06-01', 1, 1, 'Pendiente'),
+  ('Tarea 2', 'Descripción de la tarea 2', '2025-06-05', 2, 2, 'Pendiente'),
+  ('Tarea 3', 'Descripción de la tarea 3', '2025-06-10', 1, 2, 'Completada');

@@ -5,6 +5,7 @@ import com.example.control2TBD.Repository.TareaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TareaService {
@@ -42,5 +43,18 @@ public class TareaService {
 
     public TareaEntity getTareaById(int id_tarea) {
         return tareaRepository.getTareaById(id_tarea);
+    }
+
+    // 7)
+    public List<Map<String, Object>> getTareasPerUsuarioPerSector(){
+        return tareaRepository.getTareasPerUsuarioPerSector();
+    }
+    // 8)
+    public int getSectorWithMostCompletedTareasNearby(int id_usuario){
+        return tareaRepository.getSectorWithMostCompletedTareasNearby(id_usuario);
+    }
+    // 9)
+    public Double getAverageDistanceToCompletedTareas(int id_usuario){
+        return tareaRepository.getAverageDistanceToCompletedTareas(id_usuario);
     }
 }

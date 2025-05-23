@@ -48,4 +48,8 @@ public class TareaService {
     public List<TareasHechasPorUnUsuarioEnSectorDTO> getTaresHechasPorUnUsuarioEnCadaSector(long id_usuario) {
         return tareaRepository.getTaresHechasPorUnUsuarioEnCadaSector(id_usuario);
     }
+
+    public SectorEntity getSectorCercanoConMasTareasCompletadas(long id_usuario){
+        return tareaRepository.getSectorCercanoConMasTareasCompletadas(id_usuario);
+    }
 }

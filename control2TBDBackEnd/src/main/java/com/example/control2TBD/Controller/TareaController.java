@@ -64,4 +64,10 @@ public class TareaController {
     public List<TareasHechasPorUnUsuarioEnSectorDTO> getTaresHechasPorUnUsuarioEnCadaSector(@PathVariable("idUsuario") long id_usuario) {
         return tareaService.getTaresHechasPorUnUsuarioEnCadaSector(id_usuario);
     }
+
+    // ¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetros del usuario?
+    @GetMapping("/sectorMasCompletadas/{idUsuario}")
+    public SectorEntity getSectorCercanoConMasTareasCompletadas(@PathVariable("idUsuario") long id_usuario){
+        return tareaService.getSectorCercanoConMasTareasCompletadas(id_usuario);
+    }
 }

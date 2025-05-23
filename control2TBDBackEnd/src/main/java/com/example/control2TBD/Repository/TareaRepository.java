@@ -106,7 +106,7 @@ public class TareaRepository {
             String query = "SELECT s.id_sector, COALESCE(COUNT(th.id_tarea), 0) AS tareas_hechas " +
                            "FROM (SELECT t.id_sector, t.id_tarea " +
                                  "FROM tarea t " +
-                                 "WHERE t.id_usuario = 1 AND t.estado = 'Completada' "+
+                                 "WHERE t.id_usuario = :id_usuario AND t.estado = 'Completada' "+
                                  "GROUP BY t.id_sector, t.id_tarea) AS th " +
                            "RIGHT JOIN sector s ON s.id_sector = th.id_sector " +
                            "GROUP BY s.id_sector ";
@@ -119,4 +119,54 @@ public class TareaRepository {
             return null;
         }
     }
+
+    // ¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetro del usuario?
+    // Se toma el primero a pesar de que pueden haber varios con las mismas tareas completadas
+    // Falta la entidad sector
+    public SectorEntity getSectorCercanoConMasTareasCompletadas(long id_usuario){
+        try (Connection conn = sql2o.open()) {
+            SectorEntity sector;
+            String query = "SELECT * " +
+                           "FROM sector " +
+                           "WHERE id_sector " +
+                           "IN (SELECT id_sector " +
+                               "FROM (SELECT s.id_sector, COUNT(*) tareas_completadas " +
+                                     "FROM tarea t " +
+                                     "INNER JOIN sector s ON s.id_sector = t.id_sector " +
+                                     "WHERE ST_DWithin(s.ubicacion, (SELECT ubicacion FROM usuario WHERE id_usuario = :id_usuario), 2000) " +
+                                     "AND t.estado = 'Completada' " +
+                                     "GROUP BY s.id_sector " +
+                                     "ORDER BY tareas_completadas DESC " +
+                                     "LIMIT 1))";
+            sector = conn.createQuery(query)
+                    .addParameter("id_usuario", id_usuario)
+                    .executeAndFetch(SectorEntity.class);
+            return sector;
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    // query para todos los sectores con el mismo numero de tareas completadas, lo mismo de arriba pero tomando todos los sectores
+    // query = "SELECT * " +
+    //         "FROM sector " +
+    //         "WHERE id_sector " +
+    //         "IN (SELECT tc.id_sector " +
+    //	           "FROM (SELECT s.id_sector, COUNT(*) tareas_completadas " +
+    //			         "FROM tarea t " +
+    //			         "INNER JOIN sector s ON s.id_sector = t.id_sector " +
+    //			         "WHERE ST_DWithin(s.ubicacion, (SELECT ubicacion FROM usuario WHERE id_usuario = 1), 2000) " +
+    //			         "AND t.estado = 'Completada' " +
+    //			         "GROUP BY s.id_sector " +
+    //			         "ORDER BY tareas_completadas DESC) AS tc " +
+    //         "WHERE tc.tareas_completadas  " +
+    //         "= (SELECT MAX(tareas_completadas) " +
+    //	       "FROM (SELECT s.id_sector, COUNT(*) tareas_completadas " +
+    //	       "FROM tarea t " +
+    //	       "INNER JOIN sector s ON s.id_sector = t.id_sector " +
+    //	       "WHERE ST_DWithin(s.ubicacion, (SELECT ubicacion FROM usuario WHERE id_usuario = 1), 2000) " +
+    //         "AND t.estado = 'Completada' " +
+    //	       "GROUP BY s.id_sector " +
+    //	       "ORDER BY tareas_completadas DESC)));
 }

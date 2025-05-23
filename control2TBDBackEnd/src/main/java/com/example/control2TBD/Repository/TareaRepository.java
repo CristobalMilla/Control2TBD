@@ -1,5 +1,6 @@
 package com.example.control2TBD.Repository;
 
+import com.example.control2TBD.DTO.TareasHechasPorUnUsuarioEnSectorDTO;
 import com.example.control2TBD.Entity.TareaEntity;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
@@ -94,6 +95,28 @@ public class TareaRepository {
             return conn.createQuery(sql)
                        .addParameter("id_tarea", id_tarea)
                        .executeAndFetchFirst(TareaEntity.class);
+        }
+    }
+
+    // ¿Cuántas tareas ha hecho el usuario por sector?
+    // Voy a suponer que hechas == completadas
+    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTaresHechasPorUnUsuarioEnCadaSector(long id_usuario) {
+        try (Connection conn = sql2o.open()) {
+            List<TareasHechasPorUnUsuarioEnSectorDTO> tareasPorSector;
+            String query = "SELECT s.id_sector, COALESCE(COUNT(th.id_tarea), 0) AS tareas_hechas " +
+                           "FROM (SELECT t.id_sector, t.id_tarea " +
+                                 "FROM tarea t " +
+                                 "WHERE t.id_usuario = 1 AND t.estado = 'Completada' "+
+                                 "GROUP BY t.id_sector, t.id_tarea) AS th " +
+                           "RIGHT JOIN sector s ON s.id_sector = th.id_sector " +
+                           "GROUP BY s.id_sector ";
+            tareasPorSector = conn.createQuery(query)
+                    .addParameter("id_usuario", id_usuario)
+                    .executeAndFetch(TareasHechasPorUnUsuarioEnSectorDTO.class);
+            return tareasPorSector;
+        }
+        catch (Exception e) {
+            return null;
         }
     }
 }

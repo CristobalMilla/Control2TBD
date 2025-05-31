@@ -4,11 +4,11 @@ import Register from "@/pages/Register.vue";
 import Dashboard from "@/pages/Dashboard.vue";
 import NotFound from "@/pages/NotFound.vue";
 
-const routes = [
-  { path: "/", component: { template: "<div>¡Hola Mundo!</div>" } },
-  { path: "/test", component: { template: "<div>Página de Prueba</div>" } },
-];
-/*
+// const routes = [
+//   { path: "/", component: { template: "<div>¡Hola Mundo!</div>" } },
+//   { path: "/test", component: { template: "<div>Página de Prueba</div>" } },
+// ];
+
 const routes = [
   { path: "/", redirect: "/login" },
   { path: "/login", component: Login },
@@ -16,7 +16,6 @@ const routes = [
   { path: "/dashboard", component: Dashboard, meta: { requiresAuth: true } },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];
-*/
 
 const router = createRouter({
   history: createWebHistory(),

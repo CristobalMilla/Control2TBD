@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tareas")
@@ -56,5 +57,24 @@ public class TareaController {
     @GetMapping("/{id}")
     public TareaEntity getTareaById(@PathVariable("id") int id) {
         return tareaService.getTareaById(id);
+    }
+
+
+    // 7) Funcion que devuelve todas las tareas que ha realizado cada usuario por cada sector
+    @GetMapping("/allTareasPerUserPerSector")
+    public List<Map<String, Object>> getTareasPerUsuarioPerSector(){
+        return tareaService.getTareasPerUsuarioPerSector();
+    }
+
+    // 8) Funcion que obtiene el sector con mas tareas compleadas en un rango de 5 KM del usuario
+    @GetMapping("/SectorMostCompletedByUser")
+    public int getSectorWithMostCompletedTareasNearby(@RequestParam int id_usuario){
+        return tareaService.getSectorWithMostCompletedTareasNearby(id_usuario);
+    }
+
+    // 9) Funcion que devuelve el promedio de las distancias entre todas las tareas completadas y la ubicacion del usuario
+    @GetMapping("/AverageCompletedUser")
+    public Double getAverageDistanceToCompletedTareas(@RequestParam int id_usuario){
+        return tareaService.getAverageDistanceToCompletedTareas(id_usuario);
     }
 }

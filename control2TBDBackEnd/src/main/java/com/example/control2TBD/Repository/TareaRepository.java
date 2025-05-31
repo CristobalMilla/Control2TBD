@@ -5,7 +5,10 @@ import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class TareaRepository {
@@ -96,4 +99,64 @@ public class TareaRepository {
                        .executeAndFetchFirst(TareaEntity.class);
         }
     }
+    // 7) Funcion que devuelve todas las tareas que ha realizado cada usuario por cada sector
+    //Se asume que con realizado se refiere a "Completada"
+    //Retorna una lista de listas mapeadas a cada fila de la tabla
+    //Esto se puede cambiar creando un DTO para esta tabla
+    public List<Map<String, Object>> getTareasPerUsuarioPerSector(){
+        String sql = "SELECT s.id_sector, u.id_usuario , COUNT(t.id_tarea) " +
+                "FROM tarea t " +
+                "JOIN usuario u ON t.id_usuario = u.id_usuario " +
+                "JOIN sector s ON t.id_sector = s.id_sector " +
+                "WHERE t.estado = 'Completada'" +
+                "GROUP BY s.id_sector, u.id_usuario " +
+                "ORDER BY s.id_sector, u.id_usuario;";
+        try (Connection conn = sql2o.open()) {
+            return conn.createQuery(sql)
+                    .executeAndFetchTable()
+                    .asList();
+        }
+    }
+    // 8) Funcion que obtiene el sector con mas tareas compleadas en un rango de 5 KM del usuario
+    //Se ingresa id_usario y retorna id_sector
+    //Tomara al primero, aunque hayan empates
+    //Se puede devolver el sector completo si es necesario
+    //Se asume que son las tareas completadas por el usuario, si no, eliminar 4ta linea
+    public int getSectorWithMostCompletedTareasNearby(int id_usuario) {
+        String sql = "SELECT s.id_sector " +
+                "FROM tarea t " +
+                "JOIN sector s ON t.id_sector = s.id_sector " +
+                "JOIN usuario u ON t.id_usuario = u.id_usuario " +
+                "WHERE t.estado = 'Completada' " +
+                "AND ST_DWithin(u.ubicacion, s.ubicacion, 5000) " +
+                "AND u.id_usuario = :id_usuario " +
+                "GROUP BY s.id_sector " +
+                "ORDER BY COUNT(t.id_tarea) DESC " +
+                "LIMIT 1;";
+        try (Connection conn = sql2o.open()) {
+            return conn.createQuery(sql)
+                    .addParameter("id_usuario", id_usuario)
+                    .executeAndFetchFirst(Integer.class);
+        }
+    }
+    // 9) Funcion que devuelve el promedio de las distancias entre todas las tareas completadas y la ubicacion del usuario
+    //Tiene como entrada id_usario y como salida el resultado en Double
+    //La salida es en metros
+    //Se asume que son las tareas completadas por el usuario, si no, eliminar 4ta linea
+    public Double getAverageDistanceToCompletedTareas(int id_usuario) {
+        String sql = "SELECT AVG(ST_Distance(u.ubicacion, s.ubicacion)) AS avg_distance " +
+                "FROM tarea t " +
+                "JOIN usuario u ON t.id_usuario = u.id_usuario " +
+                "JOIN sector s ON t.id_sector = s.id_sector " +
+                "WHERE t.estado = 'Completada' " +
+                "AND u.id_usuario = :id_usuario;";
+        try (Connection conn = sql2o.open()) {
+            return conn.createQuery(sql)
+                    .addParameter("id_usuario", id_usuario)
+                    .executeScalar(Double.class);
+        }
+    }
+
+
+
 }

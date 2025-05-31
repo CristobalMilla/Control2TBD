@@ -1,6 +1,7 @@
 package com.example.control2TBD.Repository;
 
 import com.example.control2TBD.DTO.TareasHechasPorUnUsuarioEnSectorDTO;
+import com.example.control2TBD.Entity.SectorEntity;
 import com.example.control2TBD.Entity.TareaEntity;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
@@ -223,7 +224,7 @@ public class TareaRepository {
                                      "LIMIT 1))";
             sector = conn.createQuery(query)
                     .addParameter("id_usuario", id_usuario)
-                    .executeAndFetch(SectorEntity.class);
+                    .executeAndFetchFirst(SectorEntity.class);
             return sector;
         }
         catch (Exception e) {

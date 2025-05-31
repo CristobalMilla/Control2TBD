@@ -1,6 +1,7 @@
 package com.example.control2TBD.Service;
 
 import com.example.control2TBD.DTO.TareasHechasPorUnUsuarioEnSectorDTO;
+import com.example.control2TBD.Entity.SectorEntity;
 import com.example.control2TBD.Entity.TareaEntity;
 import com.example.control2TBD.Repository.TareaRepository;
 import org.springframework.beans.factory.annotation.Autowired;

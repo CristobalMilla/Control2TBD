@@ -1,5 +1,6 @@
 package com.example.control2TBD.Controller;
 
+import com.example.control2TBD.DTO.TareasHechasPorUnUsuarioEnSectorDTO;
 import com.example.control2TBD.Entity.TareaEntity;
 import com.example.control2TBD.Service.TareaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,5 +77,23 @@ public class TareaController {
     @GetMapping("/AverageCompletedUser")
     public Double getAverageDistanceToCompletedTareas(@RequestParam int id_usuario){
         return tareaService.getAverageDistanceToCompletedTareas(id_usuario);
+    }
+
+    // ¿Cuántas tareas ha hecho el usuario por sector?
+    @GetMapping("/porSector/{idUsuario}")
+    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTaresHechasPorUnUsuarioEnCadaSector(@PathVariable("idUsuario") long id_usuario) {
+        return tareaService.getTaresHechasPorUnUsuarioEnCadaSector(id_usuario);
+    }
+
+    // ¿Cuál es la tarea más cercana al usuario (que esté pendiente)?
+    @GetMapping("/masCercana/{idUsuario}")
+    public TareaEntity getMasCercanaAUnUsuario(@PathVariable("idUsuario") long id_usuario) {
+        return tareaService.getMasCercanaAUnUsuario(id_usuario);
+    }
+
+    // ¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetros del usuario?
+    @GetMapping("/sectorMasCompletadas/{idUsuario}")
+    public SectorEntity getSectorCercanoConMasTareasCompletadas(@PathVariable("idUsuario") long id_usuario){
+        return tareaService.getSectorCercanoConMasTareasCompletadas(id_usuario);
     }
 }

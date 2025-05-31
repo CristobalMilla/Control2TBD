@@ -49,6 +49,10 @@ public class TareaService {
         return tareaRepository.getTaresHechasPorUnUsuarioEnCadaSector(id_usuario);
     }
 
+    public TareaEntity getMasCercanaAUnUsuario(long id_usuario){
+        return tareaRepository.getTareaMasCercanaAUnUsuario(id_usuario);
+    }
+
     public SectorEntity getSectorCercanoConMasTareasCompletadas(long id_usuario){
         return tareaRepository.getSectorCercanoConMasTareasCompletadas(id_usuario);
     }

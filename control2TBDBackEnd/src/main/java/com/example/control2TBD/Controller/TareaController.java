@@ -65,6 +65,12 @@ public class TareaController {
         return tareaService.getTaresHechasPorUnUsuarioEnCadaSector(id_usuario);
     }
 
+    // ¿Cuál es la tarea más cercana al usuario (que esté pendiente)?
+    @GetMapping("/masCercana/{idUsuario}")
+    public TareaEntity getMasCercanaAUnUsuario(@PathVariable("idUsuario") long id_usuario) {
+        return tareaService.getMasCercanaAUnUsuario(id_usuario);
+    }
+
     // ¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetros del usuario?
     @GetMapping("/sectorMasCompletadas/{idUsuario}")
     public SectorEntity getSectorCercanoConMasTareasCompletadas(@PathVariable("idUsuario") long id_usuario){

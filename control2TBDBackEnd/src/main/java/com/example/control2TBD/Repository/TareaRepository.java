@@ -120,6 +120,26 @@ public class TareaRepository {
         }
     }
 
+    // ¿Cuál es la tarea más cercana al usuario (que esté pendiente)?
+    public TareaEntity getTareaMasCercanaAUnUsuario(long id_usuario) {
+        try (Connection conn = sql2o.open()) {
+            TareaEntity tareaMasCercana;
+            String query = "SELECT t.* " +
+                    "FROM tarea t " +
+                    "INNER JOIN sector s ON t.id_sector = s.id_sector " +
+                    "INNER JOIN usuario u ON t.id_usuario = u.id_usuario " +
+                    "WHERE t.estado = 'Pendiente' AND u.id_usuario = :id_usuario " +
+                    "ORDER BY ST_Distance(u.ubicacion, s.ubicacion) ASC " +
+                    "LIMIT 1";
+            tareaMasCercana = conn.createQuery(query)
+                    .addParameter("id_usuario", id_usuario).executeAndFetchFirst(TareaEntity.class);
+            return tareaMasCercana;
+        }
+         catch (Exception e) {
+            return null;
+         }
+    }
+
     // ¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetro del usuario?
     // Se toma el primero a pesar de que pueden haber varios con las mismas tareas completadas
     // Falta la entidad sector

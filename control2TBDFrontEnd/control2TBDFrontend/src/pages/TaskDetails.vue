@@ -1,6 +1,13 @@
 <template>
   <div class="task-details">
-    <h1>Lista de Tareas</h1>
+    <div class="header-section">
+      <h1>Lista de Tareas</h1>
+      <button class="btn-create-task" @click="openCreateModal">
+        <span class="plus-icon">+</span>
+        Crear Tarea
+      </button>
+    </div>
+
 
     <TaskFilter
         v-if="!loading && tasks.length > 0"
@@ -17,9 +24,17 @@
       <p>No hay tareas disponibles</p>
     </div>
 
+    <div v-else-if="filteredTasks && filteredTasks.length === 0" class="no-filtered-tasks">
+      <p>No se encontraron tareas que coincidan con los filtros aplicados</p>
+      <button @click="clearAllFilters" class="btn-clear-filters">
+        Limpiar Filtros
+      </button>
+    </div>
+
+
     <div v-else class="task-list">
       <TaskCard
-          v-for="task in tasks"
+          v-for="task in displayTasks"
           :key="task.id_tarea"
           :tarea="task"
           @task-updated="handleTaskUpdated"
@@ -27,29 +42,46 @@
           @task-deleted="handleTaskDeleted"
       />
     </div>
+
+    <TaskCreateModal
+        :is-visible="showCreateModal"
+        @close="closeCreateModal"
+        @task-created="handleTaskCreated"
+    />
   </div>
+
 </template>
 
 <script>
 import TaskCard from "@/components/TaskCard.vue";
 import { getTasks } from '../api/tasks';
 import TaskFilter from "@/components/TaskFilter.vue";
+import TaskCreateModal from "@/components/TaskCreateModal.vue";
 
 export default {
   name: "TaskDetails",
   components: {
+    TaskCreateModal,
     TaskFilter,
     TaskCard
   },
   data() {
     return {
       tasks: [],
-      loading: false
+      filteredTasks: [],
+      loading: false,
+      showCreateModal: false
 
     }
   },
   mounted() {
     this.fetchTasks()
+  },
+  computed: {
+    displayTasks() {
+      // Mostrar tareas filtradas si existen, sino mostrar todas
+      return this.filteredTasks.length > 0 ? this.filteredTasks : this.tasks
+    }
   },
 
   methods: {
@@ -65,7 +97,23 @@ export default {
         this.loading = false
       }
     },
+    openCreateModal() {
+      this.showCreateModal = true
+    },
 
+    closeCreateModal() {
+      this.showCreateModal = false
+    },
+    async handleTaskCreated(newTask) {
+      console.log('Nueva tarea creada:', newTask)
+
+      // Recargar todas las tareas para obtener la lista actualizada
+      await this.fetchTasks()
+
+      if (this.$refs.taskFilter) {
+        this.$refs.taskFilter.clearFilters()
+      }
+    },
     handleTaskUpdated(task) {
       console.log('Tarea actualizada:', task)
     },
@@ -81,7 +129,13 @@ export default {
       console.log('Tarea eliminada:', taskId)
       // Remover de la lista
       this.tasks = this.tasks.filter(task => task.id_tarea !== taskId)
+    },
+    clearAllFilters() {
+      if (this.$refs.taskFilter) {
+        this.$refs.taskFilter.clearFilters()
+      }
     }
+
   }
 }
 </script>

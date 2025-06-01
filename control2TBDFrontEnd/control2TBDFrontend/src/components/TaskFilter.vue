@@ -18,7 +18,6 @@
             type="text"
             placeholder="Buscar en título o descripción..."
             class="filter-input"
-            @input="onFilterChange"
         />
       </div>
 
@@ -29,11 +28,11 @@
             id="estado"
             v-model="filters.estado"
             class="filter-select"
-            @change="onFilterChange"
         >
           <option value="">Todos los estados</option>
           <option value="pendiente">Pendiente</option>
           <option value="completada">Completada</option>
+          <option value="fallida">Fallida</option>
         </select>
       </div>
 
@@ -115,19 +114,14 @@ export default {
     }
   },
   watch: {
-    filteredTasks: {
-      handler(newFilteredTasks) {
+    filteredTasks(newFilteredTasks) {
+      if (this.filteredCount > 0) {
         this.$emit('filtered-tasks', newFilteredTasks)
-      },
-      immediate: true
+      }
     }
+
   },
   methods: {
-    onFilterChange() {
-      // Este metodo se puede usar para efectos adicionales cuando cambian los filtros
-      // Por ahora solo emitimos el evento, pero el watcher ya maneja la emisión automática
-    },
-
     clearFilters() {
       this.filters.searchText = ''
       this.filters.estado = ''
@@ -140,21 +134,6 @@ export default {
     clearEstadoFilter() {
       this.filters.estado = ''
     },
-
-    // Metodo público para establecer filtros desde el componente padre
-    setFilters(newFilters) {
-      if (newFilters.searchText !== undefined) {
-        this.filters.searchText = newFilters.searchText
-      }
-      if (newFilters.estado !== undefined) {
-        this.filters.estado = newFilters.estado
-      }
-    },
-
-    // Metodo público para obtener los filtros actuales
-    getFilters() {
-      return { ...this.filters }
-    }
   }
 }
 </script>

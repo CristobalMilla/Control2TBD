@@ -1,4 +1,3 @@
-
 <template>
   <div class="task-card" v-if="task">
     <div class="task-header">

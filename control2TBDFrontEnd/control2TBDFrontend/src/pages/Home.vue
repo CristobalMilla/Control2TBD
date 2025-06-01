@@ -176,10 +176,10 @@ import { logoutUser } from "@/services/auth";
 import NotificationBadge from '@/components/NotificationBadge.vue'; // 1. Importa el componente
 
 //Pregunta 7
-import Question7 from "@/components/Question7.vue"; // Importar el componente Question7
+import Question7 from "@/components/QuestionCards/Question7.vue"; // Importar el componente Question7
 import { getAllTasksPerUserPerSector } from "@/api/tasks"; // Importar la función de API
 //Pregunta 8
-import Question8 from "@/components/Question8.vue";
+import Question8 from "@/components/QuestionCards/Question8.vue";
 import { getSectorMostCompletedByUser } from "@/api/tasks";
 
 export default {

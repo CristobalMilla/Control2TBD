@@ -17,7 +17,6 @@ export const getTasksBySector = async (sectorId) => {
 };
 
 //Pregunta 7
-import axiosInstance from "./axiosInstance";
 
 export const getAllTasksPerUserPerSector = async () => {
   const response = await axiosInstance.get("/tareas/allTareasPerUserPerSector");
@@ -25,7 +24,6 @@ export const getAllTasksPerUserPerSector = async () => {
 };
 
 //Pregunta 8
-import axiosInstance from "./axiosInstance";
 
 export const getSectorMostCompletedByUser = async (id_usuario) => {
   const response = await axiosInstance.get(

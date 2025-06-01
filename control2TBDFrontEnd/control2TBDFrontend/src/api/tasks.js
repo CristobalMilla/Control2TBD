@@ -20,6 +20,23 @@ export const getTasksBySector = async (sectorId) => {
   return response.data;
 };
 
+//Pregunta 7
+
+export const getAllTasksPerUserPerSector = async () => {
+  const response = await axiosInstance.get("/tareas/allTareasPerUserPerSector");
+  return response.data; // Asegúrate de que el backend devuelve los datos en el formato esperado
+};
+
+//Pregunta 8
+
+export const getSectorMostCompletedByUser = async (id_usuario) => {
+  const response = await axiosInstance.get(
+    `/tareas/SectorMostCompletedByUser`,
+    { params: { id_usuario } }
+  );
+  return response.data;
+};
+
 export const markTaskAsDone = async (taskId) => {
   const response = await axiosInstance.put(`/tasks/${taskId}/done`);
   return response.data;

@@ -107,7 +107,7 @@ public class TareaRepository {
     //Retorna una lista de listas mapeadas a cada fila de la tabla
     //Esto se puede cambiar creando un DTO para esta tabla
     public List<Map<String, Object>> getTareasPerUsuarioPerSector(){
-        String sql = "SELECT s.id_sector, u.id_usuario , COUNT(t.id_tarea) " +
+        String sql = "SELECT s.id_sector, u.id_usuario , COUNT(t.id_tarea) AS numero_de_tareas " +
                 "FROM tarea t " +
                 "JOIN usuario u ON t.id_usuario = u.id_usuario " +
                 "JOIN sector s ON t.id_sector = s.id_sector " +

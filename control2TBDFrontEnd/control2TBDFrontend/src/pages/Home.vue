@@ -142,6 +142,31 @@
           </v-card-text>
         </v-card>
       </v-container>
+
+      <!-- Card de la Pregunta 7 -->
+      <v-container>
+        <v-card class="sector-tasks-section mt-8" elevation="2">
+          <v-card-title class="d-flex align-center pa-6 bg-grey-lighten-4">
+            <v-icon size="28" color="primary" class="mr-3">mdi-format-list-bulleted</v-icon>
+            <span class="text-h5">Tareas por Sector</span>
+          </v-card-title>
+          <v-card-text>
+            <Question7 :tasks="sectorTasks" /> <!-- Pasar los datos al componente Question7 -->
+          </v-card-text>
+        </v-card>
+      </v-container>
+      <!-- Card de la Pregunta 8 -->
+      <v-container>
+        <v-card class="mt-8">
+          <v-card-title>
+            <span class="text-h5">Sector con Más Tareas Completadas</span>
+          </v-card-title>
+          <v-card-text>
+            <Question8 :sectorId="sectorMostCompleted" />
+          </v-card-text>
+        </v-card>
+      </v-container>
+
     </v-main>
   </v-container>
 </template>
@@ -150,17 +175,28 @@
 import { logoutUser } from "@/services/auth";
 import NotificationBadge from '@/components/NotificationBadge.vue'; // 1. Importa el componente
 
+//Pregunta 7
+import Question7 from "@/components/Question7.vue"; // Importar el componente Question7
+import { getAllTasksPerUserPerSector } from "@/api/tasks"; // Importar la función de API
+//Pregunta 8
+import Question8 from "@/components/Question8.vue";
+import { getSectorMostCompletedByUser } from "@/api/tasks";
+
 export default {
   name: 'HomePage',
   components: { // 2. Registra el componente
     NotificationBadge,
+    Question7, // Registrar el componente Question7
+    Question8,
   },
   data() {
     return {
       nickname: 'Usuario',
       pendingTasks: 0,
       completedTasks: 0,
-      recentTasks: []
+      recentTasks: [],
+      tasksBySectorAndUser: [], // Nuevo estado para almacenar la consulta de la pregunta 7
+      sectorMostCompleted: null, // Estado para almacenar el sector de la consulta 8
     }
   },
   computed: {
@@ -196,6 +232,16 @@ export default {
     },
     async fetchDashboardData() {
       try {
+
+        // Pregunta 7
+        const tasksPerSector = await getAllTasksPerUserPerSector();
+        this.sectorTasks = tasksPerSector; // Guardar los datos en el estado
+        //Pregunta 8
+        // Obtener el sector con más tareas completadas
+        const userId = JSON.parse(localStorage.getItem("user")).id; // Extraer el ID del usuario logueado
+        this.sectorMostCompleted = await getSectorMostCompletedByUser(userId);
+        
+
         // Aquí irá la llamada a tu API
         // Por ahora usamos datos de ejemplo
         this.pendingTasks = 5

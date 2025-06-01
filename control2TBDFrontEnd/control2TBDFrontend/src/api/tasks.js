@@ -15,3 +15,22 @@ export const getTasksBySector = async (sectorId) => {
   const response = await axiosInstance.get(`/statistics/tasks-by-sector/${sectorId}`);
   return response.data;
 };
+
+//Pregunta 7
+import axiosInstance from "./axiosInstance";
+
+export const getAllTasksPerUserPerSector = async () => {
+  const response = await axiosInstance.get("/tareas/allTareasPerUserPerSector");
+  return response.data; // Asegúrate de que el backend devuelve los datos en el formato esperado
+};
+
+//Pregunta 8
+import axiosInstance from "./axiosInstance";
+
+export const getSectorMostCompletedByUser = async (id_usuario) => {
+  const response = await axiosInstance.get(
+    `/tareas/SectorMostCompletedByUser`,
+    { params: { id_usuario } }
+  );
+  return response.data;
+};

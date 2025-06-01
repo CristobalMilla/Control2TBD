@@ -32,6 +32,24 @@
 
           <v-card-text class="pt-4">
             <v-form @submit.prevent="handleLogin" v-model="isFormValid">
+              <v-alert
+                v-if="successMessage"
+                type="success"
+                variant="tonal"
+                class="mb-4"
+              >
+                {{ successMessage }}
+              </v-alert>
+
+              <v-alert
+                v-if="errorMessage"
+                type="error"
+                variant="tonal"
+                class="mb-4"
+              >
+                {{ errorMessage }}
+              </v-alert>
+
               <v-text-field
                 v-model="nickname"
                 label="Nombre de Usuario"
@@ -52,15 +70,6 @@
                 :rules="[v => !!v || 'La contraseña es requerida']"
                 required
               ></v-text-field>
-
-              <v-alert
-                v-if="errorMessage"
-                type="error"
-                variant="tonal"
-                class="mb-4"
-              >
-                {{ errorMessage }}
-              </v-alert>
 
               <v-btn
                 type="submit"
@@ -103,10 +112,17 @@ export default {
       nickname: "",
       contrasenia: "",
       errorMessage: "",
+      successMessage: "",
       showPassword: false,
       isLoading: false,
       isFormValid: false
     };
+  },
+  mounted() {
+    // Mostrar mensaje de éxito si viene de registro
+    if (this.$route.query.registered === 'true') {
+      this.successMessage = "¡Registro exitoso! Por favor, inicia sesión con tus credenciales.";
+    }
   },
   methods: {
     async handleLogin() {
@@ -125,12 +141,18 @@ export default {
         this.$router.push("/home");
       } catch (error) {
         console.error("Error al iniciar sesión:", error);
-        if (error.response?.data?.message) {
-          this.errorMessage = error.response.data.message;
-        } else if (error.response?.status === 401) {
-          this.errorMessage = "Credenciales incorrectas. Por favor, inténtelo de nuevo.";
-        } else {
-          this.errorMessage = "Error al conectar con el servidor. Por favor, inténtelo más tarde.";
+        
+        // Usamos el mensaje personalizado que viene del servicio
+        this.errorMessage = error.message;
+
+        // Si es un error de credenciales, limpiamos la contraseña
+        if (error.code === 401 || error.code === 404) {
+          this.contrasenia = "";
+        }
+
+        // Si es un error de conexión, mostramos un mensaje más amigable
+        if (error.code === "ERR_NETWORK") {
+          this.errorMessage = "No pudimos conectar con el servidor. Por favor, verifica tu conexión a internet y vuelve a intentarlo.";
         }
       } finally {
         this.isLoading = false;

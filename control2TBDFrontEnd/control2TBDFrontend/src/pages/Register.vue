@@ -168,13 +168,23 @@ export default {
 
       try {
         await registerUser(userData);
-        this.$router.push("/login");
-      } catch (err) {
-        console.error("Error en el registro:", err);
-        if (err.response?.status === 409) {
-          this.error = "El nickname ya está en uso.";
-        } else {
-          this.error = "Error al registrar usuario. Intenta de nuevo.";
+        this.$router.push({
+          path: '/login',
+          query: { registered: 'true' }
+        });
+      } catch (error) {
+        console.error("Error en el registro:", error);
+        
+        this.error = error.message;
+
+        if (error.code === 409) {
+          this.nickname = "";
+        } else if (error.code === 400 || error.code === 422) {
+          this.contrasenia = "";
+        }
+
+        if (error.code === "ERR_NETWORK") {
+          this.error = "No pudimos conectar con el servidor. Por favor, verifica tu conexión a internet y vuelve a intentarlo.";
         }
       } finally {
         this.loading = false;

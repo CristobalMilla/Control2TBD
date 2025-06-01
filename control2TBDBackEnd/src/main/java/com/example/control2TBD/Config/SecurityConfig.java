@@ -52,16 +52,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/usuarios/login", "/api/usuarios/register").permitAll()
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/usuarios/**").permitAll()
                         .requestMatchers("/api/**").hasAnyRole("ADMIN", "TRABAJADOR", "CLIENTE")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exception -> exception
+                /*.exceptionHandling(exception -> exception
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            // Mostrar el motivo del acceso denegado
+                             Mostrar el motivo del acceso denegado
                             String requiredRoles = request.getRequestURI().contains("/api/reserva/") ? "ADMIN, TRABAJADOR, CLIENTE" : "UNKNOWN";
                             String userRoles = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
 
@@ -69,8 +67,10 @@ public class SecurityConfig {
 
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             response.getWriter().write("Acceso denegado. Rol requerido: " + requiredRoles + "\nRol actual del usuario: " + userRoles + "\nError: " + accessDeniedException.getMessage());
+
                         })
-                )
+
+                )*/
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

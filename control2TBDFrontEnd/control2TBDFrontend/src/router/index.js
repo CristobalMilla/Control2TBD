@@ -3,6 +3,7 @@ import Login from "@/pages/Login.vue";
 import Register from "@/pages/Register.vue";
 import Dashboard from "@/pages/Dashboard.vue";
 import NotFound from "@/pages/NotFound.vue";
+import Home from "@/pages/Home.vue";
 
 // const routes = [
 //   { path: "/", component: { template: "<div>¡Hola Mundo!</div>" } },
@@ -13,6 +14,7 @@ const routes = [
   { path: "/", redirect: "/login" },
   { path: "/login", component: Login },
   { path: "/register", component: Register },
+  { path: "/home", component: Home }, 
   { path: "/dashboard", component: Dashboard, meta: { requiresAuth: true } },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];

@@ -1,47 +1,105 @@
 <template>
-  <main class="main-container-register">
-    <div class="moving-gradient-register">
-      <div class="split-container-register">
-        <!-- Mitad Izquierda -->
-        <div class="left-container-register">
-          <h1>¡Bienvenido!</h1>
-          <h2>¡Regístrate para administrar tus tareas!</h2>
-        </div>
-        
-        <!-- Mitad Derecha -->
-        <div class="right-container-register">
-          <div class="content-register">
-            <!-- You can add a logo here if you have one -->
-            <!-- <img class="image-register" src="path/to/your/logo.png"> -->
-            <div class="header-register">Crear una cuenta</div>
-            <div class="headerDescription-register">Complete los campos para el registro</div>
+  <v-container fluid class="register-container pa-0 fill-height">
+    <v-row no-gutters style="min-height: 100vh;">
+      <!-- Panel Izquierdo -->
+      <v-col cols="12" md="6" class="gradient-background d-flex align-center">
+        <v-container>
+          <h1 class="text-h2 font-weight-bold text-white mb-4">
+            ¡Bienvenido!
+          </h1>
+          <h2 class="text-h5 font-weight-regular text-white">
+            ¡Regístrate para administrar tus tareas!
+          </h2>
+        </v-container>
+      </v-col>
 
-            <form @submit.prevent="registerUser" class="inputContainer-register">
-              <label for="nickname">Nombre de Usuario (Nickname):</label>
-              <input id="nickname" type="text" v-model="nickname" placeholder="Ingrese su nickname" required />
+      <!-- Panel Derecho -->
+      <v-col cols="12" md="6" class="d-flex align-center justify-center">
+        <v-card class="register-card mx-auto" max-width="600" elevation="8" rounded="lg">
+          <v-card-item class="pb-0">
+            <v-card-title class="text-h4 font-weight-bold text-primary mb-2 text-center">
+              Crear una cuenta
+            </v-card-title>
+            <v-card-subtitle class="text-body-1 text-medium-emphasis text-center">
+              Complete los campos para el registro
+            </v-card-subtitle>
+          </v-card-item>
 
-              <label for="password">Contraseña:</label>
-              <input id="password" type="password" v-model="contrasenia" placeholder="Ingrese su contraseña" required />
+          <v-card-text class="pt-4">
+            <v-form @submit.prevent="handleRegister" v-model="isFormValid">
+              <v-text-field
+                v-model="nickname"
+                label="Nombre de Usuario"
+                prepend-inner-icon="mdi-account"
+                variant="outlined"
+                :rules="[v => !!v || 'El nombre de usuario es requerido']"
+                required
+              ></v-text-field>
 
-              <label>Ubicación:</label>
-              <div id="map" style="height: 250px; width: 100%;"></div> <!-- Adjusted map height -->
-              <p v-if="latitude && longitude" class="location-display-register">
+              <v-text-field
+                v-model="contrasenia"
+                label="Contraseña"
+                prepend-inner-icon="mdi-lock"
+                :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="showPassword ? 'text' : 'password'"
+                variant="outlined"
+                @click:append-inner="showPassword = !showPassword"
+                :rules="[v => !!v || 'La contraseña es requerida']"
+                required
+              ></v-text-field>
+
+              <v-label class="text-subtitle-1 font-weight-medium mb-2">Ubicación:</v-label>
+              <div id="map" class="rounded mb-2"></div>
+              <v-label v-if="latitude && longitude" class="text-caption text-medium-emphasis">
                 Latitud: {{ latitude.toFixed(6) }}, Longitud: {{ longitude.toFixed(6) }}
-              </p>
-              <p v-else class="location-display-register">
+              </v-label>
+              <v-label v-else class="text-caption text-medium-emphasis">
                 Por favor, haga clic en el mapa para seleccionar su ubicación.
-              </p>
+              </v-label>
 
-              <button type="submit" class="sessionButton-register">Registrar</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+              <v-alert
+                v-if="error"
+                type="error"
+                variant="tonal"
+                class="mt-4 mb-4"
+              >
+                {{ error }}
+              </v-alert>
+
+              <v-btn
+                type="submit"
+                color="primary"
+                size="large"
+                block
+                :loading="loading"
+                :disabled="!isFormValid || !latitude || !longitude"
+                class="mt-4"
+              >
+                Registrar
+              </v-btn>
+
+              <div class="text-center mt-6">
+                <span class="text-medium-emphasis">¿Ya tienes una cuenta?</span>
+                <v-btn
+                  variant="text"
+                  color="primary"
+                  class="ml-2"
+                  @click="$router.push('/login')"
+                >
+                  Inicia sesión aquí
+                </v-btn>
+              </div>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
+import { registerUser } from "@/services/auth";
+
 export default {
   name: "Register",
   data() {
@@ -52,16 +110,22 @@ export default {
       longitude: null,
       map: null,
       marker: null,
-      rol: "CLIENTE", // Rol fijo por mientras se implementa la lógica de roles
+      rol: "",
+      error: "",
+      loading: false,
+      showPassword: false,
+      isFormValid: false
     };
   },
+
   mounted() {
-    if (typeof L !== 'undefined') {
+    if (typeof L !== "undefined") {
       this.initLeafletMap();
     } else {
       console.error("Leaflet is not loaded. Make sure it's included in your HTML or imported correctly.");
     }
   },
+
   methods: {
     initLeafletMap() {
       const initialPosition = [-33.4489, -70.6693]; // Posicion inicial = Santiago, Chile
@@ -83,227 +147,130 @@ export default {
         }
       });
     },
-    async registerUser() {
-      if (!this.nickname || !this.contrasenia) {
-        alert("Por favor, complete el nickname y la contraseña.");
+
+    async handleRegister() {
+      if (!this.isFormValid) return;
+      if (!this.latitude || !this.longitude) {
+        this.error = "Por favor, seleccione su ubicación en el mapa.";
         return;
       }
-      if (this.latitude === null || this.longitude === null) {
-        alert("Por favor, seleccione su ubicación en el mapa.");
-        return;
-      }
+
+      this.loading = true;
+      this.error = "";
 
       const userData = {
         nickname: this.nickname,
         contrasenia: this.contrasenia,
-        ubicacion: {
-          type: "Point",
-          coordinates: [this.longitude, this.latitude], 
-        },
-        rol: this.rol,
+        lat: this.latitude,
+        lng: this.longitude,
+        rol: this.rol || "",
       };
 
-      console.log("Datos a enviar:", JSON.stringify(userData, null, 2));
-      // llamada al backend para registrar el usuario
-      // try {
-      //   const response = await axios.post('URL_DEL_BACKEND/register', userData);
-      //   console.log('Usuario registrado:', response.data);
-      //   // Redirigir o mostrar mensaje de éxito
-      // } catch (error) {
-      //   console.error('Error al registrar usuario:', error);
-      //   alert('Error al registrar usuario. Por favor, inténtelo de nuevo.');
-      // }
-      alert("Revisa la consola para ver los datos que se enviarían.");
+      try {
+        await registerUser(userData);
+        this.$router.push("/login");
+      } catch (err) {
+        console.error("Error en el registro:", err);
+        if (err.response?.status === 409) {
+          this.error = "El nickname ya está en uso.";
+        } else {
+          this.error = "Error al registrar usuario. Intenta de nuevo.";
+        }
+      } finally {
+        this.loading = false;
+      }
     },
   },
+
   beforeUnmount() {
     if (this.map) {
       this.map.remove();
       this.map = null;
     }
-  }
+  },
 };
 </script>
 
 <style scoped>
-/* Adapted styles from the example, with '-register' suffix to avoid potential global conflicts if body styles were used */
-/* Estilos generales */
-.main-container-register {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%; /* Adjusted from 104% to prevent overflow issues */
-    height: 100vh; /* Adjusted from 103% */
-    margin: 0; /* Removed negative margins */
-    font-family: "Arial", sans-serif; /* Copied from example body */
+.register-container {
+  background-color: #f0f2f5;
 }
 
-/* Contenedor dividido */
-.split-container-register {
-    display: flex;
-    flex:1;
-    width: 100%;
-    height: 100%;
-}
-
-/* Mitad izquierda */
-.left-container-register {
-  height: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column; /* To stack h1 and h2 */
-  justify-content: center; /* Center vertically */
-  align-items: flex-start; /* Align text to the left */
-  padding: 2rem 4rem; /* Added more horizontal padding */
-  background-color: transparent;
-  box-sizing: border-box;
-}
-
-.left-container-register h1 {
-  font-size: clamp(2.5rem, 8vw, 5rem); /* Responsive font size */
-  color: #ffffff;
-  text-align:left;
-  margin-bottom: 1rem; /* Space between h1 and h2 */
-}
-
-.left-container-register h2 {
-  font-size: clamp(1rem, 4vw, 2rem); /* Responsive font size */
-  font-style: italic;
-  color: #ffffff;
-  text-align:left;
-}
-
-/* Mitad derecha */
-.right-container-register {
-  flex: 1;
-  display: flex;
-  height: 100%;
-  justify-content: center; /* Center content horizontally */
-  align-items: center; /* Center content vertically */
-  background-color: transparent;
-  padding: 1rem; /* Reduced padding */
-  box-sizing: border-box;
-  overflow-y: auto; /* Allow scrolling if content overflows */
-}
-
-.content-register {
-    background: #ffffff;
-    padding: 1.5rem 2rem; /* Adjusted padding */
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 100%;
-    max-width: 600px; /* Increased from 450px, adjust as needed */
-    box-sizing: border-box;
-}
-
-/* Imagen (optional) */
-.image-register {
-    max-width: 80px; /* Adjusted size */
-    margin: 1rem auto 0.5rem; /* Adjusted margins */
-}
-
-/* Encabezado */
-.header-register {
-    font-size: 1.5rem; /* Kept from example */
-    font-weight: bold;
-    margin-bottom: 0.25rem; /* Reduced margin */
-    color: #143e97; /* Kept from example */
-}
-
-.headerDescription-register {
-    font-size: 0.9rem; /* Adjusted size */
-    color: #3c57af; /* Kept from example */
-    margin-bottom: 1rem; /* Adjusted margin */
-}
-
-/* Inputs y botones */
-.inputContainer-register {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem; /* Adjusted gap */
-}
-
-.inputContainer-register label {
-  font-weight: bold;
-  text-align: left;
-  font-size: 0.9rem;
-  color: #333; /* Darker label color for better readability */
-  margin-bottom: -0.25rem; /* Pull label closer to input */
-}
-
-.inputContainer-register input[type="text"],
-.inputContainer-register input[type="password"] {
-    padding: 0.75rem;
-    border: 1px solid #ffd54f; /* Kept from example */
-    border-radius: 8px;
-    font-size: 1rem; /* Kept from example */
-    box-sizing: border-box;
-    width: 100%;
-}
-
-.inputContainer-register input:focus {
-    outline: none;
-    border-color: #ffc107; /* Kept from example */
-    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2); /* Kept from example */
-}
-
-.sessionButton-register {
-    background: #5863f1; /* Kept from example */
-    color: #ffffff;
-    border: none;
-    padding: 0.75rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 0.5rem; /* Added some top margin */
-}
-
-.sessionButton-register:hover {
-  background: #5f74eb; /* Kept from example */
-}
-
-/* Map specific styles */
-#map {
-  border: 1px solid #ccc;
-  border-radius: 8px; /* Match input border radius */
-  z-index: 0;
-  background-color: #f9f9f9; /* Light background for map placeholder */
-  /* The width is 100% of its parent (.inputContainer-register), 
-     so it will expand with .content_register.
-     The height is set inline in the template: style="height: 250px; width: 100%;"
-     You can increase the 250px value there if you want the map to be taller as well. */
-}
-
-.location-display-register {
-  font-size: 0.85rem;
-  color: #555;
-  margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
-  text-align: left;
-}
-
-/* Moving Gradient Background */
-@keyframes gradient-register {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.moving-gradient-register {
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, #558ffa, #2c747e, #442fff, #58338a, #5481ff, #532e6b, #491b57);
-  background-size: 400% 400%;
-  animation: gradient-register 15s ease infinite;
-  display: flex; 
-}
-
-/* Ensure form elements are above the map if any overlap issues, though usually not needed with z-index 0 on map */
-.inputContainer-register > * {
+.gradient-background {
   position: relative;
-  z-index: 1;
+  overflow: hidden;
+  background: radial-gradient(
+    circle,
+    #558ffa,    /* Azul claro */
+    #4a5ab9,    /* Azul medio */
+    #3ca6a6,    /* Verde agua */
+    #58338a,    /* Morado medio */
+    #2c747e,    /* Verde azulado */
+    #5481ff     /* Azul brillante */
+  );
+  background-size: 300% 300%;
+  animation: gradient 25s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.15) 0%,
+    transparent 70%
+  );
+  animation: shine 10s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.register-card {
+  width: 100%;
+  margin: 2rem;
+  padding: 1rem;
+  backdrop-filter: blur(8px);
+}
+
+#map {
+  height: 250px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 600px) {
+  .register-card {
+    margin: 1rem;
+    padding: 0.5rem;
+  }
+  
+  #map {
+    height: 200px;
+  }
 }
 </style>

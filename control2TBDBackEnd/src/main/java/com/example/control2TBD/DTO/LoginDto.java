@@ -1,33 +1,19 @@
 package com.example.control2TBD.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  LoginDto es una clase de transferencia de datos que representa los datos de inicio de sesión de un usuario.*/
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginDto {
 
-    private String email;
-    private String password;
+    private String nickname;
+    private String contrasenia;
 
-    public LoginDto(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    public LoginDto() {
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

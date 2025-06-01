@@ -56,7 +56,11 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-
+        String path = request.getRequestURI();
+        if (path.startsWith("/auth/usuarios")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String requestUri = request.getRequestURI();
         // Ignorar rutas públicas como /auth/**

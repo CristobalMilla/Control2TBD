@@ -1,4 +1,4 @@
-package com.example.control2TBD.DTO;
+package com.example.control2TBD.dto;
 
 public class TareasHechasPorUnUsuarioEnSectorDTO {
     private long id_sector;

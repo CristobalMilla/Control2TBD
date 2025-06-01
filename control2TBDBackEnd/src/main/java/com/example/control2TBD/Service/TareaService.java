@@ -1,9 +1,10 @@
 package com.example.control2TBD.Service;
 
-import com.example.control2TBD.DTO.TareasHechasPorUnUsuarioEnSectorDTO;
 import com.example.control2TBD.Entity.SectorEntity;
 import com.example.control2TBD.Entity.TareaEntity;
 import com.example.control2TBD.Repository.TareaRepository;
+import com.example.control2TBD.dto.TareasHechasPorUnUsuarioEnSectorDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -70,5 +71,9 @@ public class TareaService {
 
     public SectorEntity getSectorCercanoConMasTareasCompletadas(long id_usuario){
         return tareaRepository.getSectorCercanoConMasTareasCompletadas(id_usuario);
+    }
+
+    public List<TareaEntity> getTareasProximasAVencer(long id_usuario) {
+        return tareaRepository.getTareasProximasAVencer(id_usuario);
     }
 }

@@ -1,8 +1,9 @@
 package com.example.control2TBD.Repository;
 
-import com.example.control2TBD.DTO.TareasHechasPorUnUsuarioEnSectorDTO;
 import com.example.control2TBD.Entity.SectorEntity;
 import com.example.control2TBD.Entity.TareaEntity;
+import com.example.control2TBD.dto.TareasHechasPorUnUsuarioEnSectorDTO;
+
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -232,6 +233,23 @@ public class TareaRepository {
         }
     }
 
+    public List<TareaEntity> getTareasProximasAVencer(long id_usuario) {
+        String sql = "SELECT t.* " +
+                     "FROM tarea t " +
+                     "WHERE t.id_usuario = :id_usuario " +
+                     "AND t.estado = 'Pendiente' " + // Considerar solo tareas pendientes
+                     "AND t.fecha_vencimiento BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'";
+        try (Connection conn = sql2o.open()) {
+            return conn.createQuery(sql)
+                       .addParameter("id_usuario", id_usuario)
+                       .executeAndFetch(TareaEntity.class);
+        } catch (Exception e) {
+            // Manejar la excepción apropiadamente, por ejemplo, loguearla
+            System.err.println("Error al obtener tareas próximas a vencer: " + e.getMessage());
+            return new ArrayList<>(); // Devolver lista vacía en caso de error
+        }
+    }
+
     // query para todos los sectores con el mismo numero de tareas completadas, lo mismo de arriba pero tomando todos los sectores
     // query = "SELECT * " +
     //         "FROM sector " +
@@ -252,5 +270,5 @@ public class TareaRepository {
     //	       "WHERE ST_DWithin(s.ubicacion, (SELECT ubicacion FROM usuario WHERE id_usuario = 1), 2000) " +
     //         "AND t.estado = 'Completada' " +
     //	       "GROUP BY s.id_sector " +
-    //	       "ORDER BY tareas_completadas DESC)));
+    //	       "ORDER BY tareas_completadas DESC)));"
 }

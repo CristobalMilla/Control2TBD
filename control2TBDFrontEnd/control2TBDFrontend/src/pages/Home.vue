@@ -6,6 +6,7 @@
         Dashboard
       </v-app-bar-title>
       <v-spacer></v-spacer>
+      <notification-badge class="mr-2" /> <!-- 3. Usa el componente -->
       <v-btn @click="logout" variant="text" prepend-icon="mdi-logout">
         Cerrar Sesión
       </v-btn>
@@ -147,9 +148,13 @@
 
 <script>
 import { logoutUser } from "@/services/auth";
+import NotificationBadge from '@/components/NotificationBadge.vue'; // 1. Importa el componente
 
 export default {
   name: 'HomePage',
+  components: { // 2. Registra el componente
+    NotificationBadge,
+  },
   data() {
     return {
       nickname: 'Usuario',

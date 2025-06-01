@@ -1,9 +1,10 @@
 package com.example.control2TBD.Controller;
 
-import com.example.control2TBD.DTO.TareasHechasPorUnUsuarioEnSectorDTO;
 import com.example.control2TBD.Entity.SectorEntity;
 import com.example.control2TBD.Entity.TareaEntity;
 import com.example.control2TBD.Service.TareaService;
+import com.example.control2TBD.dto.TareasHechasPorUnUsuarioEnSectorDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -96,5 +97,11 @@ public class TareaController {
     @GetMapping("/sectorMasCompletadas/{idUsuario}")
     public SectorEntity getSectorCercanoConMasTareasCompletadas(@PathVariable("idUsuario") long id_usuario){
         return tareaService.getSectorCercanoConMasTareasCompletadas(id_usuario);
+    }
+
+    // Obtener tareas próximas a vencer para un usuario
+    @GetMapping("/proximasAVencer/{idUsuario}")
+    public List<TareaEntity> getTareasProximasAVencer(@PathVariable("idUsuario") long id_usuario) {
+        return tareaService.getTareasProximasAVencer(id_usuario);
     }
 }

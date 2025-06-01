@@ -347,16 +347,6 @@ export default {
   font-size: 14px;
 }
 
-.completed {
-  color: #28a745;
-  font-weight: bold;
-}
-
-.pending {
-  color: #ffc107;
-  font-weight: bold;
-}
-
 .edit-mode {
   border-top: 2px solid #007bff;
   padding-top: 12px;

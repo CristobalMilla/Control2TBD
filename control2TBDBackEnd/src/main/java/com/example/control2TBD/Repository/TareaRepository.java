@@ -109,8 +109,8 @@ public class TareaRepository {
     public List<Map<String, Object>> getTareasPerUsuarioPerSector(){
         String sql = "SELECT s.id_sector, u.id_usuario , COUNT(t.id_tarea) AS numero_de_tareas " +
                 "FROM tarea t " +
-                "JOIN usuario u ON t.id_usuario = u.id_usuario " +
-                "JOIN sector s ON t.id_sector = s.id_sector " +
+                "JOIN usuario_entity u ON t.id_usuario = u.id_usuario " +
+                "JOIN sector_entity s ON t.id_sector = s.id_sector " +
                 "WHERE t.estado = 'Completada'" +
                 "GROUP BY s.id_sector, u.id_usuario " +
                 "ORDER BY s.id_sector, u.id_usuario;";
@@ -128,8 +128,8 @@ public class TareaRepository {
     public int getSectorWithMostCompletedTareasNearby(int id_usuario) {
         String sql = "SELECT s.id_sector " +
                 "FROM tarea t " +
-                "JOIN sector s ON t.id_sector = s.id_sector " +
-                "JOIN usuario u ON t.id_usuario = u.id_usuario " +
+                "JOIN sector_entity s ON t.id_sector = s.id_sector " +
+                "JOIN usuario_entity u ON t.id_usuario = u.id_usuario " +
                 "WHERE t.estado = 'Completada' " +
                 "AND ST_DWithin(u.ubicacion, s.ubicacion, 5000) " +
                 "AND u.id_usuario = :id_usuario " +
@@ -149,8 +149,8 @@ public class TareaRepository {
     public Double getAverageDistanceToCompletedTareas(int id_usuario) {
         String sql = "SELECT AVG(ST_Distance(u.ubicacion, s.ubicacion)) AS avg_distance " +
                 "FROM tarea t " +
-                "JOIN usuario u ON t.id_usuario = u.id_usuario " +
-                "JOIN sector s ON t.id_sector = s.id_sector " +
+                "JOIN usuario_entity u ON t.id_usuario = u.id_usuario " +
+                "JOIN sector_entity s ON t.id_sector = s.id_sector " +
                 "WHERE t.estado = 'Completada' " +
                 "AND u.id_usuario = :id_usuario;";
         try (Connection conn = sql2o.open()) {
@@ -173,7 +173,7 @@ public class TareaRepository {
                                  "FROM tarea t " +
                                  "WHERE t.id_usuario = :id_usuario AND t.estado = 'Completada' "+
                                  "GROUP BY t.id_sector, t.id_tarea) AS th " +
-                           "RIGHT JOIN sector s ON s.id_sector = th.id_sector " +
+                           "RIGHT JOIN sector_entity s ON s.id_sector = th.id_sector " +
                            "GROUP BY s.id_sector ";
             tareasPorSector = conn.createQuery(query)
                     .addParameter("id_usuario", id_usuario)
@@ -191,8 +191,8 @@ public class TareaRepository {
             TareaEntity tareaMasCercana;
             String query = "SELECT t.* " +
                     "FROM tarea t " +
-                    "INNER JOIN sector s ON t.id_sector = s.id_sector " +
-                    "INNER JOIN usuario u ON t.id_usuario = u.id_usuario " +
+                    "INNER JOIN sector_entity s ON t.id_sector = s.id_sector " +
+                    "INNER JOIN usuario_entity u ON t.id_usuario = u.id_usuario " +
                     "WHERE t.estado = 'Pendiente' AND u.id_usuario = :id_usuario " +
                     "ORDER BY ST_Distance(u.ubicacion, s.ubicacion) ASC " +
                     "LIMIT 1";
@@ -212,13 +212,13 @@ public class TareaRepository {
         try (Connection conn = sql2o.open()) {
             SectorEntity sector;
             String query = "SELECT * " +
-                           "FROM sector " +
+                           "FROM sector_entity " +
                            "WHERE id_sector " +
                            "IN (SELECT id_sector " +
                                "FROM (SELECT s.id_sector, COUNT(*) tareas_completadas " +
                                      "FROM tarea t " +
-                                     "INNER JOIN sector s ON s.id_sector = t.id_sector " +
-                                     "WHERE ST_DWithin(s.ubicacion, (SELECT ubicacion FROM usuario WHERE id_usuario = :id_usuario), 2000) " +
+                                     "INNER JOIN sector_entity s ON s.id_sector = t.id_sector " +
+                                     "WHERE ST_DWithin(s.ubicacion, (SELECT ubicacion FROM usuario_entity WHERE id_usuario = :id_usuario), 2000) " +
                                      "AND t.estado = 'Completada' " +
                                      "GROUP BY s.id_sector " +
                                      "ORDER BY tareas_completadas DESC " +

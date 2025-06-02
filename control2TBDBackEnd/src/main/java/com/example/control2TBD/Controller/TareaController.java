@@ -70,13 +70,21 @@ public class TareaController {
     //ubicación del usuario
     @GetMapping("/promedio-distancia/{id_usuario}")
     public ResponseEntity<Map<String, Object>> obtenerPromedioDistanciaPorUsuario(@PathVariable Long id_usuario) {
-        Double promedio = tareaService.obtenerPromedioDistanciaTareasCompletadasPorUsuario(id_usuario);
-        Map<String, Object> response = new HashMap<>();
-        if (promedio != null) {
-            response.put("promedio_distancia", promedio);
-            return ResponseEntity.ok(response);
-        } else {
-            response.put("error", "No se pudo calcular el promedio");
+        try {
+            Double promedio = tareaService.obtenerPromedioDistanciaTareasCompletadasPorUsuario(id_usuario);
+            Map<String, Object> response = new HashMap<>();
+            
+            if (promedio != null) {
+                System.out.println("Promedio: "+promedio);
+                response.put("promedio_distancia", promedio);
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("error", "No hay tareas completadas para calcular el promedio");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Error al calcular el promedio: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

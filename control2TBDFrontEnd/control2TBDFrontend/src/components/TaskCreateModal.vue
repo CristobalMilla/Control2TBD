@@ -1,367 +1,231 @@
 <template>
-  <!-- Modal Overlay -->
-  <div v-if="isVisible" class="modal-overlay" @click="handleOverlayClick">
-    <div class="modal-container" @click.stop>
-      <div class="modal-header">
-        <h2>Crear Nueva Tarea</h2>
-        <button class="close-button" @click="cancelCreate">&times;</button>
-      </div>
+  <v-dialog
+    v-model="dialog"
+    persistent
+    max-width="600px"
+  >
+    <v-card>
+      <v-card-title class="text-h5 bg-primary text-white pa-4">
+        <span>Crear Nueva Tarea</span>
+        <v-spacer></v-spacer>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          @click="closeModal"
+          color="white"
+        ></v-btn>
+      </v-card-title>
 
-      <form @submit.prevent="confirmCreate" class="modal-form">
-        <div class="form-group">
-          <label for="titulo">Título *</label>
-          <input
-              id="titulo"
-              v-model="formData.titulo"
-              type="text"
-              class="form-input"
-              placeholder="Ingrese el título de la tarea"
-              required
-          />
-        </div>
+      <v-card-text class="pt-4">
+        <v-form ref="form" v-model="valid" @submit.prevent="handleSubmit">
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="formData.titulo"
+                  label="Título"
+                  :rules="[v => !!v || 'El título es requerido']"
+                  required
+                  variant="outlined"
+                  density="comfortable"
+                ></v-text-field>
+              </v-col>
 
-        <div class="form-group">
-          <label for="descripcion">Descripción *</label>
-          <textarea
-              id="descripcion"
-              v-model="formData.descripcion"
-              class="form-textarea"
-              placeholder="Ingrese la descripción de la tarea"
-              rows="4"
-              required
-          ></textarea>
-        </div>
+              <v-col cols="12">
+                <v-textarea
+                  v-model="formData.descripcion"
+                  label="Descripción"
+                  :rules="[v => !!v || 'La descripción es requerida']"
+                  required
+                  variant="outlined"
+                  rows="3"
+                  auto-grow
+                ></v-textarea>
+              </v-col>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="fecha_vencimiento">Fecha de Vencimiento *</label>
-            <input
-                id="fecha_vencimiento"
-                v-model="formData.fecha_vencimiento"
-                type="date"
-                class="form-input"
-                required
-            />
-          </div>
-        </div>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="formData.fecha_vencimiento"
+                  label="Fecha de Vencimiento"
+                  type="date"
+                  :rules="[v => !!v || 'La fecha de vencimiento es requerida']"
+                  required
+                  variant="outlined"
+                  :min="getCurrentDate()"
+                ></v-text-field>
+              </v-col>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="id_usuario">ID Usuario *</label>
-            <input
-                id="id_usuario"
-                v-model.number="formData.id_usuario"
-                type="number"
-                class="form-input"
-                placeholder="ID del usuario asignado"
-                min="1"
-                required
-            />
-          </div>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="formData.id_usuario"
+                  label="ID Usuario"
+                  type="number"
+                  :rules="[
+                    v => !!v || 'El ID de usuario es requerido',
+                    v => v > 0 || 'El ID debe ser positivo'
+                  ]"
+                  required
+                  variant="outlined"
+                  min="1"
+                ></v-text-field>
+              </v-col>
 
-          <div class="form-group">
-            <label for="id_sector">ID Sector *</label>
-            <input
-                id="id_sector"
-                v-model.number="formData.id_sector"
-                type="number"
-                class="form-input"
-                placeholder="ID del sector"
-                min="1"
-                required
-            />
-          </div>
-        </div>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="formData.id_sector"
+                  label="ID Sector"
+                  type="number"
+                  :rules="[
+                    v => !!v || 'El ID de sector es requerido',
+                    v => v > 0 || 'El ID debe ser positivo'
+                  ]"
+                  required
+                  variant="outlined"
+                  min="1"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-form>
+      </v-card-text>
 
-        <div class="modal-footer">
-          <button
-              type="button"
-              class="btn-cancel"
-              @click="cancelCreate"
-              :disabled="isSubmitting"
+      <v-card-actions class="pa-4">
+        <v-spacer></v-spacer>
+        <v-btn
+          color="grey-darken-1"
+          variant="text"
+          @click="closeModal"
+        >
+          Cancelar
+        </v-btn>
+        <v-btn
+          color="primary"
+          @click="handleSubmit"
+          :loading="loading"
+          :disabled="!valid || loading"
+        >
+          Crear Tarea
+        </v-btn>
+      </v-card-actions>
+
+      <!-- Snackbar para mensajes de error -->
+      <v-snackbar
+        v-model="showError"
+        color="error"
+        timeout="3000"
+      >
+        {{ errorMessage }}
+        <template v-slot:actions>
+          <v-btn
+            color="white"
+            variant="text"
+            @click="showError = false"
           >
-            Cancelar
-          </button>
-          <button
-              type="submit"
-              class="btn-confirm"
-              :disabled="isSubmitting || !isFormValid"
-          >
-            {{ isSubmitting ? 'Creando...' : 'Crear Tarea' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+            Cerrar
+          </v-btn>
+        </template>
+      </v-snackbar>
+    </v-card>
+  </v-dialog>
 </template>
 
-<script>
-import { createTask } from '../api/tasks'
+<script setup>
+import { ref, computed, watch } from 'vue'
+import { createTask } from '@/api/tasks'
 
-export default {
-  name: 'TaskCreateModal',
-  props: {
-    isVisible: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['close', 'task-created'],
-  data() {
-    return {
-      isSubmitting: false,
-      formData: {
-        titulo: '',
-        descripcion: '',
-        fecha_vencimiento: '',
-        id_usuario: null,
-        id_sector: null,
-        estado: 'Pendiente'
-      }
-    }
-  },
-  computed: {
-    isFormValid() {
-      return this.formData.titulo &&
-          this.formData.descripcion &&
-          this.formData.fecha_vencimiento &&
-          this.formData.id_usuario &&
-          this.formData.id_sector &&
-          this.formData.estado
-    }
-  },
-  watch: {
-    isVisible(newValue) {
-      if (newValue) {
-        this.resetForm()
-        // Auto-focus primer campo cuando se abre el modal
-        this.$nextTick(() => {
-          const firstInput = this.$el.querySelector('#titulo')
-          if (firstInput) {
-            firstInput.focus()
-          }
-        })
-      }
-    }
-  },
-  methods: {
-    resetForm() {
-      this.formData = {
-        titulo: '',
-        descripcion: '',
-        fecha_vencimiento: '',
-        id_usuario: null,
-        id_sector: null,
-        estado: 'Pendiente'
-      }
-      this.isSubmitting = false
-    },
+const props = defineProps({
+  isVisible: {
+    type: Boolean,
+    required: true
+  }
+})
 
-    cancelCreate() {
-      this.$emit('close')
-    },
+const emit = defineEmits(['close', 'task-created'])
 
-    handleOverlayClick() {
-      // Cerrar modal al hacer click fuera
-      this.cancelCreate()
-    },
+const dialog = computed({
+  get: () => props.isVisible,
+  set: (value) => {
+    if (!value) emit('close')
+  }
+})
 
-    async confirmCreate() {
-      if (!this.isFormValid || this.isSubmitting) {
-        return
-      }
+const form = ref(null)
+const valid = ref(false)
+const loading = ref(false)
+const showError = ref(false)
+const errorMessage = ref('')
 
-      this.isSubmitting = true
+const formData = ref({
+  titulo: '',
+  descripcion: '',
+  fecha_vencimiento: '',
+  id_usuario: '',
+  id_sector: ''
+})
 
-      try {
-        // Preparar datos para envío
-        const taskData = {
-          titulo: this.formData.titulo.trim(),
-          descripcion: this.formData.descripcion.trim(),
-          fecha_vencimiento: new Date(this.formData.fecha_vencimiento).toISOString().split('T')[0],
-          id_usuario: this.formData.id_usuario,
-          id_sector: this.formData.id_sector,
-          estado: this.formData.estado,
-        }
+const getCurrentDate = () => {
+  const today = new Date()
+  return today.toISOString().split('T')[0]
+}
 
-        // Enviar petición al backend
-        const response = await createTask(taskData)
-
-        // Emitir evento con la nueva tarea
-        this.$emit('task-created', response)
-
-        // Cerrar modal
-        this.$emit('close')
-
-        // Mostrar mensaje de éxito
-        alert('¡Tarea creada exitosamente!')
-
-      } catch (error) {
-        console.error('Error al crear la tarea:', error)
-
-        // Mostrar mensaje de error más específico
-        let errorMessage = 'Error al crear la tarea'
-        if (error.response?.data?.message) {
-          errorMessage = error.response.data.message
-        } else if (error.message) {
-          errorMessage = error.message
-        }
-
-        alert(`Error: ${errorMessage}`)
-      } finally {
-        this.isSubmitting = false
-      }
-    }
+const resetForm = () => {
+  if (form.value) {
+    form.value.reset()
+  }
+  formData.value = {
+    titulo: '',
+    descripcion: '',
+    fecha_vencimiento: '',
+    id_usuario: '',
+    id_sector: ''
   }
 }
+
+const closeModal = () => {
+  resetForm()
+  emit('close')
+}
+
+const handleSubmit = async () => {
+  if (!valid.value) return
+
+  loading.value = true
+  try {
+    const response = await createTask({
+      ...formData.value,
+      estado: 'Pendiente'
+    })
+    emit('task-created', response.data)
+    closeModal()
+  } catch (error) {
+    console.error('Error creating task:', error)
+    errorMessage.value = error.response?.data?.message || 'Error al crear la tarea'
+    showError.value = true
+  } finally {
+    loading.value = false
+  }
+}
+
+watch(() => props.isVisible, (newValue) => {
+  if (newValue) {
+    // Pre-llenar el ID de usuario del localStorage cuando se abre el modal
+    const usuario = JSON.parse(localStorage.getItem('user'))
+    if (usuario?.id_usuario) {
+      formData.value.id_usuario = usuario.id_usuario
+    }
+  }
+})
 </script>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+.v-card-title {
+  position: relative;
 }
 
-.modal-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.modal-header h2 {
-  margin: 0;
-  color: #1f2937;
-  font-size: 1.5rem;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #6b7280;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close-button:hover {
-  background-color: #f3f4f6;
-  color: #374151;
-}
-
-.modal-form {
-  padding: 24px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #374151;
-  font-size: 14px;
-}
-
-.form-textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.btn-cancel,
-.btn-confirm {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-cancel {
-  background-color: #f3f4f6;
-  color: #374151;
-}
-
-.btn-cancel:hover:not(:disabled) {
-  background-color: #e5e7eb;
-}
-
-.btn-confirm {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.btn-confirm:hover:not(:disabled) {
-  background-color: #2563eb;
-}
-
-.btn-confirm:disabled,
-.btn-cancel:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-  .modal-container {
-    width: 95%;
-    margin: 10px;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .modal-header {
-    padding: 16px 20px;
-  }
-
-  .modal-form {
-    padding: 20px;
-  }
+.v-card-title .v-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

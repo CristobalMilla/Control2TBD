@@ -8,7 +8,10 @@
         </v-btn>
       </v-app-bar-title>
       <v-spacer></v-spacer>
-      <notification-badge class="mr-2" /> <!-- 3. Usa el componente -->
+      <v-btn variant="text" @click="goToTaskDetails" class="mr-2" prepend-icon="mdi-clipboard-text">
+        Detalles de Tareas
+      </v-btn>
+      <notification-badge class="mr-2" />
       <v-btn @click="logout" variant="text" prepend-icon="mdi-logout">
         Cerrar Sesión
       </v-btn>
@@ -153,7 +156,7 @@
             <span class="text-h5">Tareas por Sector</span>
           </v-card-title>
           <v-card-text>
-            <Question7 :tasks="sectorTasks" /> <!-- Pasar los datos al componente Question7 -->
+            <Question7 :tasks="sectorTasks" />
           </v-card-text>
         </v-card>
       </v-container>
@@ -186,11 +189,11 @@
 
 <script>
 import { logoutUser } from "@/services/auth";
-import NotificationBadge from '@/components/NotificationBadge.vue'; // 1. Importa el componente
+import NotificationBadge from '@/components/NotificationBadge.vue';
 
 //Pregunta 7
-import Question7 from "@/components/QuestionCards/Question7.vue"; // Importar el componente Question7
-import { getAllTasksPerUserPerSector } from "@/api/tasks"; // Importar la función de API
+import Question7 from "@/components/QuestionCards/Question7.vue";
+import { getAllTasksPerUserPerSector } from "@/api/tasks";
 //Pregunta 8
 import Question8 from "@/components/QuestionCards/Question8.vue";
 import { getSectorMostCompletedByUser } from "@/api/tasks";
@@ -200,9 +203,9 @@ import { getAverageCompletedDistance } from "@/api/tasks";
 
 export default {
   name: 'HomePage',
-  components: { // 2. Registra el componente
+  components: {
     NotificationBadge,
-    Question7, // Registrar el componente Question7
+    Question7,
     Question8,
     Question9,
   },
@@ -212,9 +215,9 @@ export default {
       pendingTasks: 0,
       completedTasks: 0,
       recentTasks: [],
-      tasksBySectorAndUser: [], // Nuevo estado para almacenar la consulta de la pregunta 7
-      sectorMostCompleted: null, // Estado para almacenar el sector de la consulta 8
-      averageCompletedDistance: null, // Estado para almacenar el promedio de la pregunta 9
+      tasksBySectorAndUser: [],
+      sectorMostCompleted: null,
+      averageCompletedDistance: null,
     }
   },
   computed: {
@@ -232,9 +235,11 @@ export default {
   },
   methods: {
     logout() {
-    // se llama al servicio de logout
       logoutUser();
       this.$router.push('/login')
+    },
+    goToTaskDetails() {
+      this.$router.push('/taskdetails')
     },
     createTask() {
       this.$router.push('/create-task')
@@ -250,11 +255,11 @@ export default {
     },
     async fetchDashboardData() {
       try {
-        const userId = JSON.parse(localStorage.getItem("user")).id; // Extraer el ID del usuario logueado
+        const userId = JSON.parse(localStorage.getItem("user")).id;
 
         // Pregunta 7
         const tasksPerSector = await getAllTasksPerUserPerSector();
-        this.sectorTasks = tasksPerSector; // Guardar los datos en el estado
+        this.sectorTasks = tasksPerSector;
         //Pregunta 8
         // Obtener el sector con más tareas completadas
         this.sectorMostCompleted = await getSectorMostCompletedByUser(userId);
@@ -274,7 +279,7 @@ export default {
       }
     }
   },
-  mounted() { // Al montar el componente, obtenemos los datos del localStorage 
+  mounted() {
     this.fetchDashboardData()
     const storedUser = JSON.parse(localStorage.getItem("user"))
     if (storedUser && storedUser.nickname) {

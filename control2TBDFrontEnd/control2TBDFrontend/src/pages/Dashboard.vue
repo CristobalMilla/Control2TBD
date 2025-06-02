@@ -2,35 +2,49 @@
 import Query1 from '../components/QuestionCards/Question1.vue'
 import Query2 from '../components/QuestionCards/Question2.vue'
 import Query3 from '../components/QuestionCards/Question3.vue'
-/*import Query4 from '../components/QuestionCards/Question4.vue'
+import Query4 from '../components/QuestionCards/Question4.vue'
 import Query5 from '../components/QuestionCards/Question5.vue'
-import Query6 from '../components/QuestionCards/Question6.vue'*/
+import Query6 from '../components/QuestionCards/Question6.vue'
 import Query7 from '../components/QuestionCards/Question7.vue'
 import Query8 from '../components/QuestionCards/Question8.vue'
 import Query9 from '../components/QuestionCards/Question9.vue'
 import { getAllTasksPerUserPerSector } from "@/api/tasks";
 import { getSectorMostCompletedByUser } from "@/api/tasks";
 import { getAverageCompletedDistance } from "@/api/tasks";
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
+import NotificationBadge from '@/components/NotificationBadge.vue'
 
 import { ref } from 'vue'
 
+const router = useRouter();
+const authStore = useAuthStore();
 const selected_query = ref("");
 
 const questions = ref([
-                  {name: "¿Cuántas tareas ha hecho el usuario por sector?", opt: 1},
-                  {name: "¿Cuál es la tarea más cercana al usuario (que esté pendiente)?", opt: 2},
-                  {name: "¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetros del usuario?", opt: 3},
-                  {name: "¿Cuál es el promedio de distancia de las tareas completadas respecto a la ubicación del usuario?", opt: 4},
-                  {name: "¿En qué sectores geográficos se concentran la mayoría de las tareas pendientes? (utilizando agrupación espacial)", opt: 5},
-                  {name: "¿Cuál es la tarea pendiente más cercana a la ubicación del usuario?", opt: 6},
-                  {name: "¿Cuántas tareas ha realizado cada usuario por sector?", opt: 7},
-                  {name: "¿Cuál es el sector con más tareas completadas dentro de un radio de 5 km desde la ubicación del usuario?", opt: 8},
-                  {name: "¿Cuál es el promedio de distancia entre las tareas completadas y el punto registrado del usuario?", opt: 9}
+                  {name: "1. ¿Cuántas tareas ha hecho el usuario por sector?", opt: 1},
+                  {name: "2. ¿Cuál es la tarea más cercana al usuario (que esté pendiente)?", opt: 2},
+                  {name: "3. ¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetros del usuario?", opt: 3},
+                  {name: "4. ¿Cuál es el promedio de distancia de las tareas completadas respecto a la ubicación del usuario?", opt: 4},
+                  {name: "5. ¿En qué sectores geográficos se concentran la mayoría de las tareas pendientes? (utilizando agrupación espacial)", opt: 5},
+                  {name: "6. ¿Cuál es la tarea pendiente más cercana a la ubicación del usuario?", opt: 6},
+                  {name: "7. ¿Cuántas tareas ha realizado cada usuario por sector?", opt: 7},
+                  {name: "8. ¿Cuál es el sector con más tareas completadas dentro de un radio de 5 km desde la ubicación del usuario?", opt: 8},
+                  {name: "9. ¿Cuál es el promedio de distancia entre las tareas completadas y el punto registrado del usuario?", opt: 9}
                   ]);
 
 const tasksBySectorAndUser = ref([]); // Nuevo estado para almacenar la consulta de la pregunta 7
 const sectorMostCompleted = ref(null); // Estado para almacenar el sector de la consulta 8
 const averageCompletedDistance = ref(null); // Estado para almacenar el promedio de la pregunta 9
+
+const logout = () => {
+  authStore.logout();
+  router.push('/login');
+};
+
+const goToTaskDetails = () => {
+  router.push('/taskdetails');
+};
 </script>
 
 <template>
@@ -43,7 +57,10 @@ const averageCompletedDistance = ref(null); // Estado para almacenar el promedio
         </v-btn>
       </v-app-bar-title>
       <v-spacer></v-spacer>
-      <notification-badge class="mr-2" /> <!-- 3. Usa el componente -->
+      <v-btn variant="text" @click="goToTaskDetails" class="mr-2" prepend-icon="mdi-clipboard-text">
+        Detalles de Tareas
+      </v-btn>
+      <NotificationBadge class="mr-2" />
       <v-btn @click="logout" variant="text" prepend-icon="mdi-logout">
         Cerrar Sesión
       </v-btn>
@@ -99,13 +116,6 @@ const averageCompletedDistance = ref(null); // Estado para almacenar el promedio
     </v-main>
   </v-container>
 </template>
-
-
-<script>
-export default {
-  name: "Dashboard",
-};
-</script>
 
 <style>
 label {

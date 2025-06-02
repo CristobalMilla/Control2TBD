@@ -47,6 +47,15 @@ export const getAverageCompletedDistance = async (id_usuario) => {
   return response.data;
 };
 
+export const getAverageDistance = async (userId) => {
+    try {
+        const response = await axiosInstance.get(`/tareas/promedio-distancia/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el promedio de distancia:', error);
+        throw error;
+    }
+};
 
 export const markTaskAsDone = async (taskId) => {
   const response = await axiosInstance.put(`/tasks/${taskId}/done`);

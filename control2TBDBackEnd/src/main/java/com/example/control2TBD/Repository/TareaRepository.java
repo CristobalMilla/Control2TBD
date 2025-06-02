@@ -125,6 +125,29 @@ public class TareaRepository {
         }
     }
 
+    // 6) la tarea pendiente + cercana a la ubi del id del usuario
+    public TareaEntity obtenerTareaPendienteMasCercana(Long id_usuario) {
+        String sql = "SELECT t.* " +
+                "FROM tarea t " +
+                "JOIN usuario_entity u ON t.id_usuario = u.id_usuario " +
+                "JOIN sector_entity s ON t.id_sector = s.id_sector " +
+                "WHERE t.estado = 'Pendiente' " +
+                "AND u.id_usuario = :id_usuario " +
+                "ORDER BY ST_Distance( " +
+                "u.ubicacion::geography, " +
+                "ST_Centroid(s.ubicacion)::geography ) ASC " +
+                "LIMIT 1;";
+
+        try (Connection con = sql2o.open()) {
+            return con.createQuery(sql)
+                    .addParameter("id_usuario", id_usuario)
+                    .executeAndFetchFirst(TareaEntity.class);
+        } catch (Exception e) {
+            System.out.println("Error al obtener tarea más cercana: " + e.getMessage());
+            return null;
+        }
+    }
+
     // 7) Funcion que devuelve todas las tareas que ha realizado cada usuario por cada sector
     //Se asume que con realizado se refiere a "Completada"
     //Retorna una lista de listas mapeadas a cada fila de la tabla

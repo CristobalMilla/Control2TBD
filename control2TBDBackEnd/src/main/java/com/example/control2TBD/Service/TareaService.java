@@ -54,6 +54,11 @@ public class TareaService {
         return tareaRepository.obtenerPromedioDistanciaTareasCompletadasPorUsuario(idUsuario);
     }
 
+    //6) la tarea pendiente + cercana a la ubi del id del usuario
+    public TareaEntity obtenerTareaPendienteMasCercana(Long id_usuario) {
+        return tareaRepository.obtenerTareaPendienteMasCercana(id_usuario);
+    }
+
     // 7)
     public List<Map<String, Object>> getTareasPerUsuarioPerSector(){
         return tareaRepository.getTareasPerUsuarioPerSector();

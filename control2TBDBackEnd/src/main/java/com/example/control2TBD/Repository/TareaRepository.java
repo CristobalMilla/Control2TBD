@@ -2,6 +2,7 @@ package com.example.control2TBD.Repository;
 
 import com.example.control2TBD.Entity.SectorEntity;
 import com.example.control2TBD.Entity.TareaEntity;
+import com.example.control2TBD.dto.ComunaTareasDto;
 import com.example.control2TBD.dto.TareasHechasPorUnUsuarioEnSectorDTO;
 
 import org.sql2o.Connection;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -106,9 +108,7 @@ public class TareaRepository {
     //4) obtiene el promedio de distancia de las tareas completadas respecto a la
     //ubicación del usuario
     public Double obtenerPromedioDistanciaTareasCompletadasPorUsuario(Long idUsuario) {
-        String sql = "SELECT AVG(ST_Distance( "+
-                "u.ubicacion::geography, "+
-                "ST_Centroid(s.ubicacion)::geography "+
+        String sql = "SELECT AVG(ST_Distance( u.ubicacion::geography, ST_Centroid(s.ubicacion)::geography "+
                 ")) AS promedio_distancia "+
                 "FROM tarea t "+
                 "JOIN usuario_entity u ON t.id_usuario = u.id_usuario "+
@@ -122,6 +122,25 @@ public class TareaRepository {
         } catch (Exception e) {
             System.out.println("Error al calcular promedio de distancia: " + e.getMessage());
             return null;
+        }
+    }
+
+    //5) ordenar los sectores geográficos por comuna q se concentran la mayoría de las tareas pendientes
+    public List<ComunaTareasDto> obtenerCantidadTareasPendientesPorComuna() {
+        String sql = "SELECT c.nom_comuna AS comuna, COUNT(*) AS cantidad "+
+                "FROM tarea t "+
+                "JOIN sector_entity s ON t.id_sector = s.id_sector "+
+                "JOIN comuna_rm_temp c ON ST_Intersects(s.ubicacion, c.geom) "+
+                "WHERE t.estado = 'Pendiente' "+
+                "GROUP BY c.nom_comuna "+
+                "ORDER BY cantidad DESC;";
+
+        try (Connection con = sql2o.open()) {
+            return con.createQuery(sql)
+                    .executeAndFetch(ComunaTareasDto.class);
+        } catch (Exception e) {
+            System.out.println("Error al consultar tareas por comuna: " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 

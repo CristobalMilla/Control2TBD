@@ -1,16 +1,16 @@
 import axiosInstance from "./axiosInstance";
 
 export const getTasks = async () => {
-  const response = await axiosInstance.get("/tasks");
+  const response = await axiosInstance.get("/tareas");
   return response.data;
 };
 
 export const getTaskById = async (taskId) => {
-  const response = await axiosInstance.get(`/tasks/${taskId}`);
+  const response = await axiosInstance.get(`/tareas/${taskId}`);
 }
 
 export const createTask = async (taskData) => {
-  const response = await axiosInstance.post("/tasks", taskData);
+  const response = await axiosInstance.post("/tareas", taskData);
   return response.data;
 };
 

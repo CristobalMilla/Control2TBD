@@ -106,4 +106,14 @@ public class SectorRepository {
             return sector;
         }
     }
+    public boolean existsById(Integer id) {
+        String sql = "SELECT COUNT(*) FROM sector_entity WHERE id_sector = :id";
+        try (Connection conn = sql2o.open()) {
+            Integer count = conn.createQuery(sql)
+                    .addParameter("id", id)
+                    .executeScalar(Integer.class);
+            return count != null && count > 0;
+        }
+    }
+
 }

@@ -22,7 +22,7 @@ public class SectorService {
     }
 
 
-    public Optional<SectorEntity> findById(Integer id) {
+    public SectorEntity findById(Integer id) {
         return sectorRepository.findById(id);
     }
 

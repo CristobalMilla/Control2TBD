@@ -23,9 +23,13 @@ public class SectorController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SectorEntity> findById(@PathVariable Integer id) {
-        Optional<SectorEntity> sector = sectorService.findById(id);
-        return sector.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        SectorEntity sector = sectorService.findById(id);
+        if (sector == null) {
+            return ResponseEntity.notFound().build();
+        }
+        else{
+            return ResponseEntity.ok(sector);
+        }
     }
 
 

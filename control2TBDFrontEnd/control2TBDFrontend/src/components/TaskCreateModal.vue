@@ -116,7 +116,7 @@ export default {
         fecha_vencimiento: '',
         id_usuario: null,
         id_sector: null,
-        estado: 'pendiente'
+        estado: 'Pendiente'
       }
     }
   },

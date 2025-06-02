@@ -54,7 +54,7 @@
         </v-row>
 
         <!-- No Tasks State -->
-        <v-row v-else-if="tasks.length === 0">
+        <v-row v-else-if="!loading && tasks.length === 0">
           <v-col cols="12">
             <v-alert
               type="info"
@@ -67,7 +67,7 @@
         </v-row>
 
         <!-- No Filtered Tasks State -->
-        <v-row v-else-if="filteredTasks && filteredTasks.length === 0">
+        <v-row v-else-if="!loading && filteredTasks !== null && filteredTasks.length === 0">
           <v-col cols="12">
             <v-alert
               type="warning"
@@ -128,23 +128,29 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const tasks = ref([])
-const filteredTasks = ref([])
+const filteredTasks = ref(null) // Iniciar como null para distinguir de un array vacío por filtro
 const loading = ref(false)
 const showCreateModal = ref(false)
 const taskFilter = ref(null)
 
+// displayTasks ahora usará filteredTasks si ha sido establecido (incluso si es un array vacío por un filtro)
+// de lo contrario, usará la lista completa de tasks (antes de que el filtro emita por primera vez)
 const displayTasks = computed(() => {
-  return filteredTasks.value.length > 0 ? filteredTasks.value : tasks.value
+  if (filteredTasks.value !== null) {
+    return filteredTasks.value;
+  }
+  return tasks.value;
 })
 
 const fetchTasks = async () => {
   loading.value = true
+  filteredTasks.value = null; // Resetear al cargar nuevas tareas
   try {
     const response = await getTasks()
-    tasks.value = response // Changed from response.data to response
+    tasks.value = response
+    // No establecemos filteredTasks aquí directamente; esperamos al evento de TaskFilter
   } catch (error) {
     console.error('Error fetching tasks:', error)
-    // showError('Error al cargar las tareas') // Ensure showError is defined if you uncomment this
   } finally {
     loading.value = false
   }

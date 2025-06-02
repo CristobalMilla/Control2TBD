@@ -1,4 +1,3 @@
-
 <template>
   <div class="task-filter">
     <div class="filter-header">
@@ -99,38 +98,40 @@ export default {
 
       // Filtro por estado
       if (this.filters.estado !== '') {
-        filtered = filtered.filter(task => task.estado === this.filters.estado)
+        filtered = filtered.filter(task => task.estado && task.estado.toLowerCase() === this.filters.estado.toLowerCase());
       }
 
       return filtered
     },
-
     filteredCount() {
-      return this.filteredTasks.length
+      return this.filteredTasks.length;
     },
-
     totalCount() {
-      return this.tasks.length
+      return this.tasks.length;
     }
   },
   watch: {
+    // Observa la propiedad computada interna filteredTasks
     filteredTasks(newFilteredTasks) {
-      if (this.filteredCount > 0) {
-        this.$emit('filtered-tasks', newFilteredTasks)
-      }
+      this.$emit('filtered-tasks', newFilteredTasks);
     }
-
+  },
+  mounted() {
+    // Emitir el estado inicial de las tareas filtradas (que serán todas las tareas si no hay filtros)
+    // Esto asegura que TaskDetails.vue reciba la lista completa inicialmente.
+    if (this.tasks.length > 0) {
+        this.$emit('filtered-tasks', this.filteredTasks);
+    }
   },
   methods: {
     clearFilters() {
       this.filters.searchText = ''
       this.filters.estado = ''
+      // El watch en filteredTasks se encargará de emitir la actualización
     },
-
     clearSearchFilter() {
       this.filters.searchText = ''
     },
-
     clearEstadoFilter() {
       this.filters.estado = ''
     },

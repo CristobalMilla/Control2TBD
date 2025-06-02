@@ -1,5 +1,5 @@
 <template>
-  <div class="task-card" v-if="task">
+  <div class="task-card" v-if="task && !loading">
     <div class="task-header">
       <h3 class="task-title">{{ editForm.titulo }}</h3>
       <div class="task-actions">
@@ -23,7 +23,6 @@
           <p><strong>Usuario:</strong> {{ usuarioNombre || 'Cargando...' }}</p>
           <p><strong>Fecha de Vencimiento:</strong> {{ formatDate(editForm.fecha_vencimiento) }}</p>
           <p><strong>Sector:</strong> {{ editForm.id_sector }}</p>
-          <p><strong>Usuario:</strong> {{ usuarioNombre }}</p>
           <p><strong>Estado:</strong> {{ editForm.estado}}</p>
         </div>
       </div>
@@ -89,7 +88,7 @@
   </div>
 
   <div v-else class="error">
-    <p>Error al cargar la tarea</p>
+    <p>Error al cargar la tarea o la tarea no está disponible.</p>
   </div>
 
 </template>
@@ -108,9 +107,9 @@ export default {
   },
   data() {
     return {
-      task: null,
+      task: null, // Se usará para el v-if y como copia local de la tarea
       isEditing: false,
-      loading: false,
+      loading: true, // Iniciar como true, se pondrá en false cuando todo esté listo
       usuarioNombre: '',
       editForm: {
         id_tarea: '',
@@ -118,117 +117,155 @@ export default {
         descripcion: '',
         fecha_vencimiento: '',
         id_sector: '',
-        id_usuario: '',
+        id_usuario: '', // Asegúrate de que id_usuario esté en editForm si lo necesitas
         estado: '',
       }
     }
   },
   mounted() {
-    this.fetchUsuarioNombre()
-    this.fetchTask()
+    if (this.tarea) {
+      this.task = { ...this.tarea }; // Copia la tarea de la prop a la data local
+      // Inicializa editForm con los datos de la tarea para el modo de visualización
+      this.initializeEditForm();
+      this.fetchUsuarioNombre().finally(() => {
+        this.loading = false; // Terminar la carga después de obtener el nombre del usuario
+      });
+    } else {
+      console.error("TaskCard: La prop 'tarea' es indefinida o nula.");
+      this.loading = false; // No hay nada que cargar
+    }
   },
   methods: {
-    async fetchTask() {
-      this.editForm = {
-        id_tarea: this.tarea.id_tarea,
-        titulo: this.tarea.titulo,
-        descripcion: this.tarea.descripcion,
-        fecha_vencimiento: this.tarea.fecha_vencimiento,
-        id_sector: this.tarea.id_sector,
-        estado: this.tarea.estado
+    initializeEditForm() {
+      if (this.task) {
+        this.editForm = {
+          id_tarea: this.task.id_tarea,
+          titulo: this.task.titulo,
+          descripcion: this.task.descripcion,
+          fecha_vencimiento: this.task.fecha_vencimiento, // Mantener formato original para visualización
+          id_sector: this.task.id_sector,
+          id_usuario: this.task.id_usuario,
+          estado: this.task.estado,
+        };
       }
-      this.loading = true
-
     },
-
     async fetchUsuarioNombre() {
+      if (!this.task || !this.task.id_usuario) {
+        this.usuarioNombre = 'N/A';
+        // No es necesario establecer loading a false aquí si se hace en el finally del mounted
+        return;
+      }
       try {
-        const response = await getUserById(this.tarea.id_usuario)
-        this.editForm.id_usuario = this.tarea.id_usuario
-        this.usuarioNombre = response.data.nickname || 'Usuario desconocido'
+        // getUserById devuelve directamente el objeto de datos del usuario
+        const usuarioData = await getUserById(this.task.id_usuario);
+        this.editForm.id_usuario = this.task.id_usuario; // Asegurar que id_usuario en editForm esté seteado
+        if (usuarioData && typeof usuarioData.nickname !== 'undefined') {
+          this.usuarioNombre = usuarioData.nickname;
+        } else {
+          this.usuarioNombre = 'Usuario desconocido';
+          // console.warn('Datos de usuario o nickname no encontrados para ID:', this.task.id_usuario, usuarioData);
+        }
       } catch (error) {
-        console.error('Error fetching usuario:', error)
-        this.usuarioNombre = 'Error al cargar usuario'
+        console.error('Error fetching usuario:', error); // Este es el error que ves en la consola
+        this.usuarioNombre = 'Error al cargar usuario';
       }
     },
 
     toggleEdit() {
       if (this.isEditing) {
-        this.cancelEdit()
+        this.cancelEdit();
       } else {
-        this.startEdit()
+        this.startEdit();
       }
     },
 
     startEdit() {
-      this.isEditing = true
+      this.isEditing = true;
+      // Al editar, copia los datos actuales de 'task' y formatea la fecha para el input
       this.editForm = {
-        titulo: this.tarea.titulo,
-        descripcion: this.tarea.descripcion,
-        fecha_vencimiento: this.formatDateForInput(this.tarea.fecha_vencimiento),
-        id_sector: this.tarea.id_sector
-      }
+        ...this.task, // Copia todos los campos del estado actual de la tarea
+        fecha_vencimiento: this.formatDateForInput(this.task.fecha_vencimiento),
+      };
     },
 
     cancelEdit() {
-      this.isEditing = false
-      this.fetchUsuarioNombre()
-      this.fetchTask()
+      this.isEditing = false;
+      // Restaura editForm al estado actual de 'this.task' (datos de visualización)
+      this.initializeEditForm();
+      // No es necesario llamar a fetchUsuarioNombre aquí a menos que el usuario pueda cambiar
     },
 
     async saveChanges() {
-      this.loading = true
+      this.loading = true; // Indicar proceso de guardado
       try {
-        await updateTask(this.tarea.id_tarea, this.editForm)
+        // El payload para updateTask debe coincidir con lo que espera la API.
+        // editForm.fecha_vencimiento ya está formateada para el input (YYYY-MM-DD)
+        const payload = {
+            titulo: this.editForm.titulo,
+            descripcion: this.editForm.descripcion,
+            fecha_vencimiento: this.editForm.fecha_vencimiento, // Asegúrate que este formato sea el esperado por el backend
+            id_sector: this.editForm.id_sector,
+            // Incluye otros campos si son editables, ej: estado, id_usuario (si es editable)
+        };
+        const updatedTaskDataFromServer = await updateTask(this.task.id_tarea, payload);
 
-        this.$emit('task-updated', this.editForm)
+        // Actualiza el estado local 'task' con la respuesta del servidor
+        this.task = { ...this.task, ...updatedTaskDataFromServer };
+        // Actualiza editForm para reflejar el estado guardado (para modo visualización)
+        this.initializeEditForm(); // Esto usará el this.task actualizado
 
-        this.isEditing = false
-        alert('Tarea actualizada exitosamente')
+        this.$emit('task-updated', this.task);
+        this.isEditing = false;
+        alert('Tarea actualizada exitosamente');
       } catch (error) {
-        console.error('Error updating task:', error)
-        alert('Error al actualizar la tarea')
+        console.error('Error updating task:', error);
+        alert('Error al actualizar la tarea');
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async markAsCompleted() {
-
-      this.loading = true
+      if (this.task.estado && this.task.estado.toLowerCase() === 'completada') {
+        alert('La tarea ya está completada.');
+        return;
+      }
+      this.loading = true;
       try {
-        await markTaskAsDone(this.tarea.id_tarea)
+        // Asumimos que markTaskAsDone devuelve la tarea actualizada
+        const updatedTask = await markTaskAsDone(this.task.id_tarea); // Asegúrate que markTaskAsDone esté correcta
+        this.task.estado = updatedTask.estado; // Actualiza el estado local
+        this.editForm.estado = updatedTask.estado; // Y el de editForm
 
-        // Emit event to parent component
-        this.$emit('task-completed', this.tarea.id_tarea)
-
-        alert('Tarea marcada como completada')
+        this.$emit('task-completed', this.task.id_tarea); // O emite la tarea actualizada
+        alert('Tarea marcada como completada');
       } catch (error) {
-        console.error('no se pudo marcar como completada por:', error)
-        alert('Error al marcar la tarea como completada')
+        console.error('no se pudo marcar como completada por:', error);
+        alert('Error al marcar la tarea como completada');
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async deleteTask() {
       if (!confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
-        return
+        return;
       }
 
-      this.loading = true
+      this.loading = true;
       try {
-        await deleteTask(this.tarea.id_tarea)
+        await deleteTask(this.task.id_tarea); // Usa this.task.id_tarea
 
         // Emit event to parent component
-        this.$emit('task-deleted', this.tarea.id_tarea)
+        this.$emit('task-deleted', this.task.id_tarea);
 
-        alert('Tarea eliminada exitosamente')
+        // No necesitas hacer nada más aquí, el componente será eliminado por el padre
+        // alert('Tarea eliminada exitosamente'); // Opcional, ya que el componente desaparecerá
       } catch (error) {
-        console.error('Error deleting task:', error)
-        alert('Error al eliminar la tarea')
+        console.error('Error deleting task:', error);
+        alert('Error al eliminar la tarea');
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 

@@ -7,6 +7,7 @@ export const getTasks = async () => {
 
 export const getTaskById = async (taskId) => {
   const response = await axiosInstance.get(`/tareas/${taskId}`);
+  return response.data; // Asegúrate de retornar los datos
 }
 
 export const createTask = async (taskData) => {
@@ -58,7 +59,8 @@ export const getAverageDistance = async (userId) => {
 };
 
 export const markTaskAsDone = async (taskId) => {
-  const response = await axiosInstance.put(`/tasks/${taskId}/done`);
+  // Corregir el endpoint para que coincida con el backend
+  const response = await axiosInstance.put(`/tareas/${taskId}/complete`);
   return response.data;
 }
 

@@ -3,7 +3,7 @@ import { ref, watch, onMounted, nextTick } from 'vue'
 import axios from 'axios'
 
 const masCercana = ref({})
-const sector = ref({})
+const sector = ref([])
 const map = ref(null)
 
 const getTareasHechas = async () => {
@@ -17,6 +17,7 @@ const getTareasHechas = async () => {
     })
 
     masCercana.value = response.data
+    console.log(response);
   } catch (error) {
     console.error("Error obteniendo tarea más cercana", error)
   }
@@ -39,20 +40,41 @@ const getSector = async (sectorId) => {
 }
 
 const initMap = async () => {
-  await nextTick()
+    await nextTick();
 
-  const center = [-33.4489, -70.6693]
-  map.value = L.map("map").setView(center, 15)
+    const usuario_local = JSON.parse(localStorage.getItem("user"));
+    const response = await axios.get("http://localhost:8000/api/usuarios/" + usuario_local.id_usuario, {
+        headers: {
+        Authorization: `Bearer ${usuario_local.token}`,
+        },
+    });
+    const usuario = response.data;
+    const center = [usuario.ubicacion.coordinates[1], usuario.ubicacion.coordinates[0]];
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; OpenStreetMap contributors',
-  }).addTo(map.value)
+    map.value = L.map("map").setView(center, 15);
 
-  if (sector.value.ubicacion) {
-    const geoJson = JSON.parse(sector.value.ubicacion)
-    L.geoJSON(geoJson).addTo(map.value)
-  }
-}
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map.value);
+
+    if (sector.value.ubicacion) {
+        const sectorCenter = [
+        sector.value.ubicacion.coordinates[0][0][1],
+        sector.value.ubicacion.coordinates[0][0][0],
+        ];
+        map.value.setView(sectorCenter, 17);
+
+        const geoJSON = {
+        type: "Feature",
+        geometry: {
+            type: "Polygon",
+            coordinates: [sector.value.ubicacion.coordinates[0]],
+        },
+        properties: {},
+        };
+        L.geoJSON(geoJSON).addTo(map.value);
+    }
+};
 
 onMounted(async () => {
   await getTareasHechas()
@@ -65,8 +87,6 @@ watch(() => masCercana.value.id_sector, async (newVal) => {
   }
 })
 </script>
-
-
     <template>
     <v-container>
         <v-row>

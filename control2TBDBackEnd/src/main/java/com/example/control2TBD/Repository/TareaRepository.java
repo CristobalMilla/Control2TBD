@@ -225,8 +225,25 @@ public class TareaRepository {
         }
     }
 
+    // Obtener tareas pendientes de un usuario
+    public List<TareaEntity> getTareasPendientesPorUsuario(Long id_usuario) {
+        String sql = "SELECT * FROM tarea WHERE id_usuario = :id_usuario AND estado = 'Pendiente'";
+        try (Connection conn = sql2o.open()) {
+            return conn.createQuery(sql)
+                    .addParameter("id_usuario", id_usuario)
+                    .executeAndFetch(TareaEntity.class);
+        }
+    }
 
-
+    // Obtener tareas completadas de un usuario
+    public List<TareaEntity> getTareasCompletadasPorUsuario(Long id_usuario) {
+        String sql = "SELECT * FROM tarea WHERE id_usuario = :id_usuario AND estado = 'Completada'";
+        try (Connection conn = sql2o.open()) {
+            return conn.createQuery(sql)
+                    .addParameter("id_usuario", id_usuario)
+                    .executeAndFetch(TareaEntity.class);
+        }
+    }
 
     // ¿Cuántas tareas ha hecho el usuario por sector?
     // Voy a suponer que hechas == completadas
@@ -313,6 +330,16 @@ public class TareaRepository {
             // Manejar la excepción apropiadamente, por ejemplo, loguearla
             System.err.println("Error al obtener tareas próximas a vencer: " + e.getMessage());
             return new ArrayList<>(); // Devolver lista vacía en caso de error
+        }
+    }
+
+    // Obtener todas las tareas de un usuario específico
+    public List<TareaEntity> getTareasPorUsuario(Long id_usuario) {
+        String sql = "SELECT * FROM tarea WHERE id_usuario = :id_usuario";
+        try (Connection conn = sql2o.open()) {
+            return conn.createQuery(sql)
+                    .addParameter("id_usuario", id_usuario)
+                    .executeAndFetch(TareaEntity.class);
         }
     }
 

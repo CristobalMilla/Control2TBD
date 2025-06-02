@@ -125,6 +125,18 @@ public class TareaController {
         return tareaService.getAverageDistanceToCompletedTareas(id);
     }
 
+    // Obtener tareas pendientes de un usuario
+    @GetMapping("/pendientes/usuario/{idUsuario}")
+    public List<TareaEntity> getTareasPendientesPorUsuario(@PathVariable("idUsuario") Long idUsuario) {
+        return tareaService.getTareasPendientesPorUsuario(idUsuario);
+    }
+
+    // Obtener tareas completadas de un usuario
+    @GetMapping("/completadas/usuario/{idUsuario}")
+    public List<TareaEntity> getTareasCompletadasPorUsuario(@PathVariable("idUsuario") Long idUsuario) {
+        return tareaService.getTareasCompletadasPorUsuario(idUsuario);
+    }
+
     // ¿Cuántas tareas ha hecho el usuario por sector?
     @GetMapping("/porSector/{idUsuario}")
     public List<TareasHechasPorUnUsuarioEnSectorDTO> getTareasHechasPorUnUsuarioEnCadaSector(@PathVariable("idUsuario") long id_usuario) {
@@ -148,5 +160,11 @@ public class TareaController {
     @GetMapping("/proximasAVencer/{idUsuario}")
     public List<TareaEntity> getTareasProximasAVencer(@PathVariable("idUsuario") Long id_usuario) {
         return tareaService.getTareasProximasAVencer(id_usuario);
+    }
+
+    // Obtener todas las tareas de un usuario específico
+    @GetMapping("/usuario/{idUsuario}")
+    public List<TareaEntity> getTareasPorUsuario(@PathVariable("idUsuario") Long idUsuario) {
+        return tareaService.getTareasPorUsuario(idUsuario);
     }
 }

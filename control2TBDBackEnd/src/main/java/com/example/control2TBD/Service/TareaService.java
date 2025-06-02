@@ -82,6 +82,14 @@ public class TareaService {
         return tareaRepository.getAverageDistanceToCompletedTareas(id_usuario);
     }
 
+    public List<TareaEntity> getTareasPendientesPorUsuario(Long id_usuario) {
+        return tareaRepository.getTareasPendientesPorUsuario(id_usuario);
+    }
+
+    public List<TareaEntity> getTareasCompletadasPorUsuario(Long id_usuario) {
+        return tareaRepository.getTareasCompletadasPorUsuario(id_usuario);
+    }
+
     public List<TareasHechasPorUnUsuarioEnSectorDTO> getTareasHechasPorUnUsuarioEnCadaSector(long id_usuario) {
         return tareaRepository.getTareasHechasPorUnUsuarioEnCadaSector(id_usuario);
     }
@@ -97,5 +105,9 @@ public class TareaService {
 
     public List<TareaEntity> getTareasProximasAVencer(Long id_usuario) {
         return tareaRepository.getTareasProximasAVencer(id_usuario);
+    }
+
+    public List<TareaEntity> getTareasPorUsuario(Long id_usuario) {
+        return tareaRepository.getTareasPorUsuario(id_usuario);
     }
 }

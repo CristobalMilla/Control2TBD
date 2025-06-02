@@ -193,7 +193,7 @@ import { getAllTasksPerUserPerSector } from "@/api/tasks"; // Importar la funci√
 import Question8 from "@/components/QuestionCards/Question8.vue";
 import { getSectorMostCompletedByUser } from "@/api/tasks";
 //Pregunta 9
-import Question9 from "@/components/Question9.vue";
+import Question9 from "@/components/QuestionCards/Question9.vue";
 import { getAverageCompletedDistance } from "@/api/tasks";
 
 export default {

@@ -38,7 +38,6 @@ export const getSectorMostCompletedByUser = async (id_usuario) => {
 };
 
 //Pregunta 9
-import axiosInstance from "./axiosInstance";
 
 export const getAverageCompletedDistance = async (id_usuario) => {
   const response = await axiosInstance.get(

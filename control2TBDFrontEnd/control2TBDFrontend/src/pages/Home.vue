@@ -2,8 +2,10 @@
   <v-container fluid class="dashboard pa-0">
     <v-app-bar color="primary" dark elevation="2">
       <v-app-bar-title class="d-flex align-center">
-        <v-icon size="24" class="mr-2">mdi-view-dashboard</v-icon>
-        Dashboard
+        <v-btn variant="text" @click="$router.push('/dashboard')" class="d-flex align-center">
+          <v-icon size="24" class="mr-2">mdi-view-dashboard</v-icon>
+          Dashboard
+        </v-btn>
       </v-app-bar-title>
       <v-spacer></v-spacer>
       <notification-badge class="mr-2" /> <!-- 3. Usa el componente -->

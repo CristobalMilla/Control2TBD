@@ -6,8 +6,11 @@ import com.example.control2TBD.Service.TareaService;
 import com.example.control2TBD.dto.TareasHechasPorUnUsuarioEnSectorDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +63,21 @@ public class TareaController {
     @GetMapping("/{id}")
     public TareaEntity getTareaById(@PathVariable("id") int id) {
         return tareaService.getTareaById(id);
+    }
+
+    //4) obtiene el promedio de distancia de las tareas completadas respecto a la
+    //ubicación del usuario
+    @GetMapping("/promedio-distancia/{idUsuario}")
+    public ResponseEntity<Map<String, Object>> obtenerPromedioDistanciaPorUsuario(@PathVariable Long idUsuario) {
+        Double promedio = tareaService.obtenerPromedioDistanciaTareasCompletadasPorUsuario(idUsuario);
+        Map<String, Object> response = new HashMap<>();
+        if (promedio != null) {
+            response.put("promedio_distancia", promedio);
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "No se pudo calcular el promedio");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
 

@@ -22,75 +22,75 @@ public class TareaRepository {
     public TareaRepository(Sql2o sql2o) {
         this.sql2o = sql2o;
     }
-    
+
     // Crear Tarea
     public void createTarea(TareaEntity tarea) {
         String sql = "INSERT INTO tarea (titulo, descripcion, fecha_vencimiento, id_usuario, id_sector, estado) " +
-                     "VALUES (:titulo, :descripcion, :fecha_vencimiento, :id_usuario, :id_sector, :estado)";
+                "VALUES (:titulo, :descripcion, :fecha_vencimiento, :id_usuario, :id_sector, :estado)";
         try (Connection conn = sql2o.open()) {
             conn.createQuery(sql)
-                .addParameter("titulo", tarea.getTitulo())
-                .addParameter("descripcion", tarea.getDescripcion())
-                .addParameter("fecha_vencimiento", tarea.getFecha_vencimiento())
-                .addParameter("id_usuario", tarea.getId_usuario())
-                .addParameter("id_sector", tarea.getId_sector())
-                .addParameter("estado", tarea.getEstado())
-                .executeUpdate();
+                    .addParameter("titulo", tarea.getTitulo())
+                    .addParameter("descripcion", tarea.getDescripcion())
+                    .addParameter("fecha_vencimiento", tarea.getFecha_vencimiento())
+                    .addParameter("id_usuario", tarea.getId_usuario())
+                    .addParameter("id_sector", tarea.getId_sector())
+                    .addParameter("estado", tarea.getEstado())
+                    .executeUpdate();
         }
     }
-    
+
     // Editar Tarea: Actualiza título, descripción, fecha de vencimiento y sector
     public void updateTarea(TareaEntity tarea) {
         String sql = "UPDATE tarea SET titulo = :titulo, descripcion = :descripcion, " +
-                     "fecha_vencimiento = :fecha_vencimiento, id_sector = :id_sector " +
-                     "WHERE id_tarea = :id_tarea";
+                "fecha_vencimiento = :fecha_vencimiento, id_sector = :id_sector " +
+                "WHERE id_tarea = :id_tarea";
         try (Connection conn = sql2o.open()) {
             conn.createQuery(sql)
-                .addParameter("titulo", tarea.getTitulo())
-                .addParameter("descripcion", tarea.getDescripcion())
-                .addParameter("fecha_vencimiento", tarea.getFecha_vencimiento())
-                .addParameter("id_sector", tarea.getId_sector())
-                .addParameter("id_tarea", tarea.getId_tarea())
-                .executeUpdate();
+                    .addParameter("titulo", tarea.getTitulo())
+                    .addParameter("descripcion", tarea.getDescripcion())
+                    .addParameter("fecha_vencimiento", tarea.getFecha_vencimiento())
+                    .addParameter("id_sector", tarea.getId_sector())
+                    .addParameter("id_tarea", tarea.getId_tarea())
+                    .executeUpdate();
         }
     }
-    
+
     // Eliminar Tarea
     public void deleteTarea(int id_tarea) {
         String sql = "DELETE FROM tarea WHERE id_tarea = :id_tarea";
         try (Connection conn = sql2o.open()) {
             conn.createQuery(sql)
-                .addParameter("id_tarea", id_tarea)
-                .executeUpdate();
+                    .addParameter("id_tarea", id_tarea)
+                    .executeUpdate();
         }
     }
-    
+
     // Marcar Tarea como Completada
     public void markTareaCompleted(int id_tarea) {
         String sql = "UPDATE tarea SET estado = 'Completada' WHERE id_tarea = :id_tarea";
         try (Connection conn = sql2o.open()) {
             conn.createQuery(sql)
-                .addParameter("id_tarea", id_tarea)
-                .executeUpdate();
+                    .addParameter("id_tarea", id_tarea)
+                    .executeUpdate();
         }
     }
-    
+
     // Obtener lista de todas las tareas
     public List<TareaEntity> getAllTareas() {
         String sql = "SELECT * FROM tarea";
         try (Connection conn = sql2o.open()) {
             return conn.createQuery(sql)
-                       .executeAndFetch(TareaEntity.class);
+                    .executeAndFetch(TareaEntity.class);
         }
     }
-    
+
     // Obtener tareas filtradas por estado (pendientes o completadas)
     public List<TareaEntity> getTareasByEstado(String estado) {
         String sql = "SELECT * FROM tarea WHERE estado = :estado"; //pendientes o completadas
         try (Connection conn = sql2o.open()) {
             return conn.createQuery(sql)
-                       .addParameter("estado", estado)
-                       .executeAndFetch(TareaEntity.class);
+                    .addParameter("estado", estado)
+                    .executeAndFetch(TareaEntity.class);
         }
     }
 
@@ -98,10 +98,33 @@ public class TareaRepository {
         String sql = "SELECT * FROM tarea WHERE id_tarea = :id_tarea";
         try (Connection conn = sql2o.open()) {
             return conn.createQuery(sql)
-                       .addParameter("id_tarea", id_tarea)
-                       .executeAndFetchFirst(TareaEntity.class);
+                    .addParameter("id_tarea", id_tarea)
+                    .executeAndFetchFirst(TareaEntity.class);
         }
     }
+
+    //4) obtiene el promedio de distancia de las tareas completadas respecto a la
+    //ubicación del usuario
+    public Double obtenerPromedioDistanciaTareasCompletadasPorUsuario(Long idUsuario) {
+        String sql = "SELECT AVG(ST_Distance( "+
+                "u.ubicacion::geography, "+
+                "ST_Centroid(s.ubicacion)::geography "+
+                ")) AS promedio_distancia "+
+                "FROM tarea t "+
+                "JOIN usuario_entity u ON t.id_usuario = u.id_usuario "+
+                "JOIN sector_entity s ON t.id_sector = s.id_sector "+
+                "WHERE t.estado = 'Completada' AND u.id_usuario = :idUsuario;";
+
+        try (Connection con = sql2o.open()) {
+            return con.createQuery(sql)
+                    .addParameter("idUsuario", idUsuario)
+                    .executeScalar(Double.class);
+        } catch (Exception e) {
+            System.out.println("Error al calcular promedio de distancia: " + e.getMessage());
+            return null;
+        }
+    }
+
     // 7) Funcion que devuelve todas las tareas que ha realizado cada usuario por cada sector
     //Se asume que con realizado se refiere a "Completada"
     //Retorna una lista de listas mapeadas a cada fila de la tabla

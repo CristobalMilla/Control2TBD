@@ -48,6 +48,12 @@ public class TareaService {
         return tareaRepository.getTareaById(id_tarea);
     }
 
+    //4) obtiene el promedio de distancia de las tareas completadas respecto a la
+    //ubicación del usuario
+    public Double obtenerPromedioDistanciaTareasCompletadasPorUsuario(Long idUsuario) {
+        return tareaRepository.obtenerPromedioDistanciaTareasCompletadasPorUsuario(idUsuario);
+    }
+
     // 7)
     public List<Map<String, Object>> getTareasPerUsuarioPerSector(){
         return tareaRepository.getTareasPerUsuarioPerSector();

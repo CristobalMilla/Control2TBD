@@ -141,10 +141,10 @@ const fetchTasks = async () => {
   loading.value = true
   try {
     const response = await getTasks()
-    tasks.value = response.data
+    tasks.value = response // Changed from response.data to response
   } catch (error) {
     console.error('Error fetching tasks:', error)
-    showError('Error al cargar las tareas')
+    // showError('Error al cargar las tareas') // Ensure showError is defined if you uncomment this
   } finally {
     loading.value = false
   }

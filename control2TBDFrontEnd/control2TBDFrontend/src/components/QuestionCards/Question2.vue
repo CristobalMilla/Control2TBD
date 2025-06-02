@@ -5,19 +5,21 @@ import axios from 'axios'
 const masCercana = ref({})
 const sector = ref([])
 const map = ref(null)
+const tienePendientes = ref(false)
 
 const getTareasMasCercana = async () => {
   try {
     const usuario = JSON.parse(localStorage.getItem("user"))
-
     const response = await axios.get("http://localhost:8000/api/tareas/masCercana/" + usuario.id_usuario, {
       headers: {
         Authorization: `Bearer ${usuario.token}`,
       },
     })
-
-    masCercana.value = response.data
-    console.log(response);
+    if(response.data != ""){
+        masCercana.value = response.data;
+        tienePendientes.value = true;
+    }
+    
   } catch (error) {
     console.error("Error obteniendo tarea más cercana", error)
   }
@@ -32,6 +34,7 @@ const getSector = async (sectorId) => {
         Authorization: `Bearer ${usuario.token}`,
       },
     })
+
     sector.value = response.data
   } catch (error) {
     console.error("Error obteniendo sector", error)
@@ -89,7 +92,7 @@ watch(() => masCercana.value.id_sector, async (newVal) => {
     <template>
     <v-container>
         <v-row>
-        <v-col cols="12" md="4">
+        <v-col v-if="tienePendientes" cols="12" md="4">
             <div class="text-h4">
                 {{masCercana.titulo}}
             </div>
@@ -103,6 +106,11 @@ watch(() => masCercana.value.id_sector, async (newVal) => {
                 Sector: {{masCercana.id_sector}}
             </div>
         </v-col> 
+        <v-col v-else>
+            <div class="text-h4">
+                No tienes tareas pendientes
+            </div>
+        </v-col>
         <v-col cols="12" md="8">
             mapa: 
             <div id="map" class="rounded mb-2"></div>

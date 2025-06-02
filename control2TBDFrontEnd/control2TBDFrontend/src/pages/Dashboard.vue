@@ -1,8 +1,8 @@
 <script setup>
 import Query1 from '../components/QuestionCards/Question1.vue'
 import Query2 from '../components/QuestionCards/Question2.vue'
-/*import Query3 from '../components/QuestionCards/Question3.vue'
-import Query4 from '../components/QuestionCards/Question4.vue'
+import Query3 from '../components/QuestionCards/Question3.vue'
+/*import Query4 from '../components/QuestionCards/Question4.vue'
 import Query5 from '../components/QuestionCards/Question5.vue'
 import Query6 from '../components/QuestionCards/Question6.vue'*/
 import Query7 from '../components/QuestionCards/Question7.vue'

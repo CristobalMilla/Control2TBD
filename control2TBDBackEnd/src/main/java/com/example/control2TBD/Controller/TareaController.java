@@ -129,7 +129,7 @@ public class TareaController {
     @GetMapping("/porSector/{idUsuario}")
     public List<TareasHechasPorUnUsuarioEnSectorDTO> getTareasHechasPorUnUsuarioEnCadaSector(@PathVariable("idUsuario") long id_usuario) {
         System.out.println(id_usuario);
-        return tareaService.getTaresHechasPorUnUsuarioEnCadaSector(id_usuario);
+        return tareaService.getTareasHechasPorUnUsuarioEnCadaSector(id_usuario);
     }
 
     // ¿Cuál es la tarea más cercana al usuario (que esté pendiente)?

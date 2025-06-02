@@ -196,7 +196,7 @@ public class TareaRepository {
                 "JOIN sector_entity s ON t.id_sector = s.id_sector " +
                 "JOIN usuario_entity u ON t.id_usuario = u.id_usuario " +
                 "WHERE t.estado = 'Completada' " +
-                "AND ST_DWithin(u.ubicacion, s.ubicacion, 5000) " +
+                "AND ST_DWithin(s.ubicacion, u.ubicacion, 5000) " +
                 "AND u.id_usuario = :id_usuario " +
                 "GROUP BY s.id_sector " +
                 "ORDER BY COUNT(t.id_tarea) DESC " +
@@ -273,10 +273,9 @@ public class TareaRepository {
     // ¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetro del usuario?
     // Se toma el primero a pesar de que pueden haber varios con las mismas tareas completadas
     // Falta la entidad sector
-    public SectorEntity getSectorCercanoConMasTareasCompletadas(Long id_usuario){
+    public Long getSectorCercanoConMasTareasCompletadas(Long id_usuario){
         try (Connection conn = sql2o.open()) {
-            SectorEntity sector;
-            String query = "SELECT * " +
+            String query = "SELECT id_sector " +
                            "FROM sector_entity " +
                            "WHERE id_sector " +
                            "IN (SELECT id_sector " +
@@ -288,12 +287,14 @@ public class TareaRepository {
                                      "GROUP BY s.id_sector " +
                                      "ORDER BY tareas_completadas DESC " +
                                      "LIMIT 1))";
-            sector = conn.createQuery(query)
+            Long id_sector = conn.createQuery(query)
                     .addParameter("id_usuario", id_usuario)
-                    .executeAndFetchFirst(SectorEntity.class);
-            return sector;
+                    .executeAndFetchFirst(Long.class);
+
+            return id_sector;
         }
         catch (Exception e) {
+            System.out.println(e);
             return null;
         }
     }

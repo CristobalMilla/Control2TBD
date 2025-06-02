@@ -2,6 +2,7 @@ package com.example.control2TBD.Service;
 
 import com.example.control2TBD.Entity.SectorEntity;
 import com.example.control2TBD.Entity.TareaEntity;
+import com.example.control2TBD.Repository.SectorRepository;
 import com.example.control2TBD.Repository.TareaRepository;
 import com.example.control2TBD.dto.ComunaTareasDto;
 import com.example.control2TBD.dto.TareasHechasPorUnUsuarioEnSectorDTO;
@@ -16,9 +17,12 @@ public class TareaService {
 
     private final TareaRepository tareaRepository;
 
+    private final SectorRepository sectorRepository;
+
     @Autowired
-    public TareaService(TareaRepository tareaRepository) {
+    public TareaService(TareaRepository tareaRepository, SectorRepository sectorRepository) {
         this.tareaRepository = tareaRepository;
+        this.sectorRepository = sectorRepository;
     }
 
     public void createTarea(TareaEntity tarea) {
@@ -78,7 +82,7 @@ public class TareaService {
         return tareaRepository.getAverageDistanceToCompletedTareas(id_usuario);
     }
 
-    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTaresHechasPorUnUsuarioEnCadaSector(long id_usuario) {
+    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTareasHechasPorUnUsuarioEnCadaSector(long id_usuario) {
         return tareaRepository.getTareasHechasPorUnUsuarioEnCadaSector(id_usuario);
     }
 
@@ -87,7 +91,8 @@ public class TareaService {
     }
 
     public SectorEntity getSectorCercanoConMasTareasCompletadas(Long id_usuario){
-        return tareaRepository.getSectorCercanoConMasTareasCompletadas(id_usuario);
+        Long id_sector = tareaRepository.getSectorCercanoConMasTareasCompletadas(id_usuario);
+        return sectorRepository.findById(id_sector);
     }
 
     public List<TareaEntity> getTareasProximasAVencer(Long id_usuario) {

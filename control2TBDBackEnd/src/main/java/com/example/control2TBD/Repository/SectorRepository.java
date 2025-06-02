@@ -1,9 +1,8 @@
 package com.example.control2TBD.Repository;
 
 import com.example.control2TBD.Entity.SectorEntity;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +33,9 @@ public class SectorRepository {
         String wkt = (String) row.get("ubicacion_wkt");
         if (wkt != null) {
             try {
-                Point point = (Point) wktReader.read(wkt);
-                point.setSRID(4326);
-                sector.setUbicacion(point);
+                Polygon polygon = (Polygon) wktReader.read(wkt);
+                polygon.setSRID(4326);
+                sector.setUbicacion(polygon);
             } catch (ParseException e) {
                 throw new RuntimeException("Error al parsear la geometría: " + e.getMessage(), e);
             }
@@ -44,13 +43,12 @@ public class SectorRepository {
 
         return sector;
     }
-    private String pointToWKT(Point point) {
-        if (point == null) {
+    private String polygonToWKT(Polygon polygon) {
+        if (polygon == null) {
             return null;
         }
-        return String.format("POINT(%f %f)", point.getX(), point.getY());
+        return polygon.toText();
     }
-
     public List<SectorEntity> findAll() {
         String sql = "SELECT id_sector, ST_AsText(ubicacion) as ubicacion_wkt FROM sector_entity";
         try (Connection conn = sql2o.open()) {
@@ -87,7 +85,7 @@ public class SectorRepository {
     public SectorEntity update(SectorEntity sector) {
         String sql = "UPDATE sector_entity SET ubicacion = ST_GeomFromText(:ubicacion, 4326) WHERE id_sector = :id";
         try (Connection conn = sql2o.open()) {
-            String wkt = pointToWKT(sector.getUbicacion());
+            String wkt = polygonToWKT(sector.getUbicacion());
             conn.createQuery(sql)
                     .addParameter("ubicacion", wkt)
                     .addParameter("id", sector.getId_sector())
@@ -99,7 +97,7 @@ public class SectorRepository {
     public SectorEntity save(SectorEntity sector) {
         String sql = "INSERT INTO sector_entity (ubicacion) VALUES (ST_GeomFromText(:ubicacion, 4326)) RETURNING id_sector";
         try (Connection conn = sql2o.open()) {
-            String wkt = pointToWKT(sector.getUbicacion());
+            String wkt = polygonToWKT(sector.getUbicacion());
             Integer generatedId = conn.createQuery(sql)
                     .addParameter("ubicacion", wkt)
                     .executeAndFetchFirst(Integer.class);
@@ -108,11 +106,4 @@ public class SectorRepository {
             return sector;
         }
     }
-    public Point createPoint(double longitude, double latitude) {
-        Coordinate coordinate = new Coordinate(longitude, latitude);
-        Point point = geometryFactory.createPoint(coordinate);
-        point.setSRID(4326);
-        return point;
-    }
-
 }

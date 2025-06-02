@@ -5,10 +5,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import org.locationtech.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Polygon;
 
 @Entity
 @Data
@@ -20,6 +20,6 @@ public class SectorEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_sector;
     
-    @Column(columnDefinition = "geometry(Point, 4326)")
-    private Point ubicacion;
+    @Column(columnDefinition = "geometry(Polygon, 4326)")
+    private Polygon ubicacion;
 }

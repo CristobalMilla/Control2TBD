@@ -152,7 +152,7 @@ export default {
         fecha_vencimiento: '',
         id_usuario: null,
         id_sector: null,
-        estado: 'pendiente'
+        estado: 'Pendiente'
       }
       this.isSubmitting = false
     },
@@ -181,6 +181,7 @@ export default {
           fecha_vencimiento: new Date(this.formData.fecha_vencimiento).toISOString(),
           id_usuario: this.formData.id_usuario,
           id_sector: this.formData.id_sector,
+          estado: this.formData.estado,
         }
 
         // Enviar petición al backend

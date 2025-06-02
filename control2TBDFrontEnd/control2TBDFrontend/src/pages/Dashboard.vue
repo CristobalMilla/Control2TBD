@@ -28,53 +28,68 @@ const questions = ref([
 
 <template>
   <v-container>
-    <v-row>
-      <v-col cols="12" md="6">
-        <h1>Panel de Control</h1>
+    <v-app-bar color="primary" dark elevation="2">
+      <v-app-bar-title class="d-flex align-center">
+        <v-btn variant="text" @click="$router.push('/home')" class="d-flex align-center">
+          <v-icon size="24" class="mr-2">mdi-view-dashboard</v-icon>
+          Home
+        </v-btn>
+      </v-app-bar-title>
+      <v-spacer></v-spacer>
+      <notification-badge class="mr-2" /> <!-- 3. Usa el componente -->
+      <v-btn @click="logout" variant="text" prepend-icon="mdi-logout">
+        Cerrar Sesión
+      </v-btn>
+    </v-app-bar>
+    <v-main>
+      <v-row>
+        <v-col cols="12" md="6">
+          <h1>Panel de Control</h1>
 
-        <v-select
-          v-model="selected_query"
-          :items="questions"
-          item-title="name"
-          item-value="opt"
-          label="Consultas"
-          variant="outlined"
-          density="comfortable"
-        />
-      </v-col>
-    </v-row>
+          <v-select
+            v-model="selected_query"
+            :items="questions"
+            item-title="name"
+            item-value="opt"
+            label="Consultas"
+            variant="outlined"
+            density="comfortable"
+          />
+        </v-col>
+      </v-row>
 
-    <v-row>
-      <v-col cols="12" md="10">
-        <div v-if="selected_query == 1">
-          <Query1/>
-        </div>
-        <div v-if="selected_query == 2">
-          <Query2/>
-        </div>
-        <div v-if="selected_query == 3">
-          <Query3/>
-        </div>
-        <div v-if="selected_query == 4">
-          <Query4/>
-        </div>
-        <div v-if="selected_query == 5">
-          <Query5/>
-        </div>
-        <div v-if="selected_query == 6">
-          <Query6/>
-        </div>
-        <div v-if="selected_query == 7">
-          <Query7/>
-        </div>
-        <div v-if="selected_query == 8">
-          <Query8/>
-        </div>
-        <div v-if="selected_query == 9">
-          <Query9/>
-        </div>
-      </v-col>
-    </v-row>
+      <v-row>
+        <v-col cols="12" md="10">
+          <div v-if="selected_query == 1">
+            <Query1/>
+          </div>
+          <div v-if="selected_query == 2">
+            <Query2/>
+          </div>
+          <div v-if="selected_query == 3">
+            <Query3/>
+          </div>
+          <div v-if="selected_query == 4">
+            <Query4/>
+          </div>
+          <div v-if="selected_query == 5">
+            <Query5/>
+          </div>
+          <div v-if="selected_query == 6">
+            <Query6/>
+          </div>
+          <div v-if="selected_query == 7">
+            <Query7/>
+          </div>
+          <div v-if="selected_query == 8">
+            <Query8/>
+          </div>
+          <div v-if="selected_query == 9">
+            <Query9/>
+          </div>
+        </v-col>
+      </v-row>
+    </v-main>
   </v-container>
 </template>
 

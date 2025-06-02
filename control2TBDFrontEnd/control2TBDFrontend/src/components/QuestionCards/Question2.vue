@@ -6,7 +6,7 @@ const masCercana = ref({})
 const sector = ref([])
 const map = ref(null)
 
-const getTareasHechas = async () => {
+const getTareasMasCercana = async () => {
   try {
     const usuario = JSON.parse(localStorage.getItem("user"))
 
@@ -32,7 +32,6 @@ const getSector = async (sectorId) => {
         Authorization: `Bearer ${usuario.token}`,
       },
     })
-
     sector.value = response.data
   } catch (error) {
     console.error("Error obteniendo sector", error)
@@ -77,7 +76,7 @@ const initMap = async () => {
 };
 
 onMounted(async () => {
-  await getTareasHechas()
+  await getTareasMasCercana()
 })
 
 watch(() => masCercana.value.id_sector, async (newVal) => {

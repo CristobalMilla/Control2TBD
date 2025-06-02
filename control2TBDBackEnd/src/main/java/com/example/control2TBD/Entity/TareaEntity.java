@@ -1,12 +1,12 @@
 package com.example.control2TBD.Entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class TareaEntity {
     private int id_tarea;
     private String titulo;
     private String descripcion;
-    private Date fecha_vencimiento;
+    private LocalDate fecha_vencimiento;
     private int id_usuario;
     private int id_sector;
     private String estado;
@@ -14,7 +14,7 @@ public class TareaEntity {
     public TareaEntity() {
     }
 
-    public TareaEntity(int id_tarea, String titulo, String descripcion, Date fecha_vencimiento, int id_usuario, int id_sector, String estado) {
+    public TareaEntity(int id_tarea, String titulo, String descripcion, LocalDate fecha_vencimiento, int id_usuario, int id_sector, String estado) {
         this.id_tarea = id_tarea;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -48,11 +48,11 @@ public class TareaEntity {
         this.descripcion = descripcion;
     }
 
-    public Date getFecha_vencimiento() {
+    public LocalDate getFecha_vencimiento() {
         return fecha_vencimiento;
     }
 
-    public void setFecha_vencimiento(Date fecha_vencimiento) {
+    public void setFecha_vencimiento(LocalDate fecha_vencimiento) {
         this.fecha_vencimiento = fecha_vencimiento;
     }
 

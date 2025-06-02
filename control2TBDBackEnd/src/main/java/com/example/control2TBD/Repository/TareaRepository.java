@@ -148,7 +148,7 @@ public class TareaRepository {
     //Tomara al primero, aunque hayan empates
     //Se puede devolver el sector completo si es necesario
     //Se asume que son las tareas completadas por el usuario, si no, eliminar 4ta linea
-    public int getSectorWithMostCompletedTareasNearby(int id_usuario) {
+    public int getSectorWithMostCompletedTareasNearby(Long id_usuario) {
         String sql = "SELECT s.id_sector " +
                 "FROM tarea t " +
                 "JOIN sector_entity s ON t.id_sector = s.id_sector " +
@@ -169,7 +169,7 @@ public class TareaRepository {
     //Tiene como entrada id_usario y como salida el resultado en Double
     //La salida es en metros
     //Se asume que son las tareas completadas por el usuario, si no, eliminar 4ta linea
-    public Double getAverageDistanceToCompletedTareas(int id_usuario) {
+    public Double getAverageDistanceToCompletedTareas(Long id_usuario) {
         String sql = "SELECT AVG(ST_Distance(u.ubicacion, s.ubicacion)) AS avg_distance " +
                 "FROM tarea t " +
                 "JOIN usuario_entity u ON t.id_usuario = u.id_usuario " +

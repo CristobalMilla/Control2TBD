@@ -59,11 +59,11 @@ public class TareaService {
         return tareaRepository.getTareasPerUsuarioPerSector();
     }
     // 8)
-    public int getSectorWithMostCompletedTareasNearby(int id_usuario){
+    public int getSectorWithMostCompletedTareasNearby(Long id_usuario){
         return tareaRepository.getSectorWithMostCompletedTareasNearby(id_usuario);
     }
     // 9)
-    public Double getAverageDistanceToCompletedTareas(int id_usuario){
+    public Double getAverageDistanceToCompletedTareas(Long id_usuario){
         return tareaRepository.getAverageDistanceToCompletedTareas(id_usuario);
     }
 

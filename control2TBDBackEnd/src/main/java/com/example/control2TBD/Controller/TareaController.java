@@ -88,15 +88,15 @@ public class TareaController {
     }
 
     // 8) Funcion que obtiene el sector con mas tareas compleadas en un rango de 5 KM del usuario
-    @GetMapping("/SectorMostCompletedByUser")
-    public int getSectorWithMostCompletedTareasNearby(@RequestParam int id_usuario){
-        return tareaService.getSectorWithMostCompletedTareasNearby(id_usuario);
+    @GetMapping("/SectorMostCompletedByUser/{id}")
+    public int getSectorWithMostCompletedTareasNearby(@PathVariable Long id){
+        return tareaService.getSectorWithMostCompletedTareasNearby(id);
     }
 
     // 9) Funcion que devuelve el promedio de las distancias entre todas las tareas completadas y la ubicacion del usuario
-    @GetMapping("/AverageCompletedUser")
-    public Double getAverageDistanceToCompletedTareas(@RequestParam int id_usuario){
-        return tareaService.getAverageDistanceToCompletedTareas(id_usuario);
+    @GetMapping("/AverageCompletedUser/{id}")
+    public Double getAverageDistanceToCompletedTareas(@PathVariable Long id){
+        return tareaService.getAverageDistanceToCompletedTareas(id);
     }
 
     // ¿Cuántas tareas ha hecho el usuario por sector?

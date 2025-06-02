@@ -67,9 +67,9 @@ public class TareaController {
 
     //4) obtiene el promedio de distancia de las tareas completadas respecto a la
     //ubicación del usuario
-    @GetMapping("/promedio-distancia/{idUsuario}")
-    public ResponseEntity<Map<String, Object>> obtenerPromedioDistanciaPorUsuario(@PathVariable Long idUsuario) {
-        Double promedio = tareaService.obtenerPromedioDistanciaTareasCompletadasPorUsuario(idUsuario);
+    @GetMapping("/promedio-distancia/{id_usuario}")
+    public ResponseEntity<Map<String, Object>> obtenerPromedioDistanciaPorUsuario(@PathVariable Long id_usuario) {
+        Double promedio = tareaService.obtenerPromedioDistanciaTareasCompletadasPorUsuario(id_usuario);
         Map<String, Object> response = new HashMap<>();
         if (promedio != null) {
             response.put("promedio_distancia", promedio);
@@ -80,6 +80,17 @@ public class TareaController {
         }
     }
 
+    //6) la tarea pendiente + cercana a la ubi del id del usuario
+    @GetMapping("/pendiente-mas-cercana/{id_usuario}")
+    public ResponseEntity<?> obtenerTareaPendienteMasCercana(@PathVariable Long id_usuario) {
+        TareaEntity tarea = tareaService.obtenerTareaPendienteMasCercana(id_usuario);
+
+        if (tarea != null) {
+            return ResponseEntity.ok(tarea);
+        } else {
+            return ResponseEntity.status(404).body("No se encontró tarea pendiente cercana para el usuario " + id_usuario);
+        }
+    }
 
     // 7) Funcion que devuelve todas las tareas que ha realizado cada usuario por cada sector
     @GetMapping("/allTareasPerUserPerSector")

@@ -37,6 +37,18 @@ export const getSectorMostCompletedByUser = async (id_usuario) => {
   return response.data;
 };
 
+//Pregunta 9
+import axiosInstance from "./axiosInstance";
+
+export const getAverageCompletedDistance = async (id_usuario) => {
+  const response = await axiosInstance.get(
+    `/tareas/AverageCompletedUser`,
+    { params: { id_usuario } }
+  );
+  return response.data;
+};
+
+
 export const markTaskAsDone = async (taskId) => {
   const response = await axiosInstance.put(`/tasks/${taskId}/done`);
   return response.data;

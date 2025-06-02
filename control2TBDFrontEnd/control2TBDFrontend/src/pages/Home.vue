@@ -166,6 +166,17 @@
           </v-card-text>
         </v-card>
       </v-container>
+      <!-- Card de la pregunta 9 -->
+      <v-container>
+        <v-card class="mt-8">
+          <v-card-title>
+            <span class="text-h5">Promedio de Distancia a Tareas Completadas</span>
+          </v-card-title>
+          <v-card-text>
+            <Question9 :averageDistance="averageCompletedDistance" />
+          </v-card-text>
+        </v-card>
+      </v-container>
 
     </v-main>
   </v-container>
@@ -181,6 +192,9 @@ import { getAllTasksPerUserPerSector } from "@/api/tasks"; // Importar la funci�
 //Pregunta 8
 import Question8 from "@/components/QuestionCards/Question8.vue";
 import { getSectorMostCompletedByUser } from "@/api/tasks";
+//Pregunta 9
+import Question9 from "@/components/Question9.vue";
+import { getAverageCompletedDistance } from "@/api/tasks";
 
 export default {
   name: 'HomePage',
@@ -188,6 +202,7 @@ export default {
     NotificationBadge,
     Question7, // Registrar el componente Question7
     Question8,
+    Question9,
   },
   data() {
     return {
@@ -197,6 +212,7 @@ export default {
       recentTasks: [],
       tasksBySectorAndUser: [], // Nuevo estado para almacenar la consulta de la pregunta 7
       sectorMostCompleted: null, // Estado para almacenar el sector de la consulta 8
+      averageCompletedDistance: null, // Estado para almacenar el promedio de la pregunta 9
     }
   },
   computed: {
@@ -232,15 +248,17 @@ export default {
     },
     async fetchDashboardData() {
       try {
+        const userId = JSON.parse(localStorage.getItem("user")).id; // Extraer el ID del usuario logueado
 
         // Pregunta 7
         const tasksPerSector = await getAllTasksPerUserPerSector();
         this.sectorTasks = tasksPerSector; // Guardar los datos en el estado
         //Pregunta 8
         // Obtener el sector con más tareas completadas
-        const userId = JSON.parse(localStorage.getItem("user")).id; // Extraer el ID del usuario logueado
         this.sectorMostCompleted = await getSectorMostCompletedByUser(userId);
-        
+        //Pregunta 9
+        // Obtener el promedio de distancia
+        this.averageCompletedDistance = await getAverageCompletedDistance(userId);
 
         // Aquí irá la llamada a tu API
         // Por ahora usamos datos de ejemplo

@@ -3,6 +3,7 @@ package com.example.control2TBD.Service;
 import com.example.control2TBD.Entity.SectorEntity;
 import com.example.control2TBD.Entity.TareaEntity;
 import com.example.control2TBD.Repository.TareaRepository;
+import com.example.control2TBD.dto.ComunaTareasDto;
 import com.example.control2TBD.dto.TareasHechasPorUnUsuarioEnSectorDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,11 @@ public class TareaService {
     //ubicación del usuario
     public Double obtenerPromedioDistanciaTareasCompletadasPorUsuario(Long idUsuario) {
         return tareaRepository.obtenerPromedioDistanciaTareasCompletadasPorUsuario(idUsuario);
+    }
+
+    //5) ordenar los sectores geográficos por comuna q se concentran la mayoría de las tareas pendientes
+    public List<ComunaTareasDto> obtenerCantidadTareasPendientesPorComuna() {
+        return tareaRepository.obtenerCantidadTareasPendientesPorComuna();
     }
 
     //6) la tarea pendiente + cercana a la ubi del id del usuario

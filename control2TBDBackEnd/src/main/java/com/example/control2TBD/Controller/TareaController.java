@@ -3,6 +3,7 @@ package com.example.control2TBD.Controller;
 import com.example.control2TBD.Entity.SectorEntity;
 import com.example.control2TBD.Entity.TareaEntity;
 import com.example.control2TBD.Service.TareaService;
+import com.example.control2TBD.dto.ComunaTareasDto;
 import com.example.control2TBD.dto.TareasHechasPorUnUsuarioEnSectorDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,12 @@ public class TareaController {
             response.put("error", "No se pudo calcular el promedio");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    //5) ordenar los sectores geográficos por comuna q se concentran la mayoría de las tareas pendientes
+    @GetMapping("/comunas-tareas-pendientes")
+    public List<ComunaTareasDto> obtenerTareasPorComuna() {
+        return tareaService.obtenerCantidadTareasPendientesPorComuna();
     }
 
     //6) la tarea pendiente + cercana a la ubi del id del usuario

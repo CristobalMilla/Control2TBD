@@ -165,7 +165,7 @@ public class TareaRepository {
 
     // ¿Cuántas tareas ha hecho el usuario por sector?
     // Voy a suponer que hechas == completadas
-    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTaresHechasPorUnUsuarioEnCadaSector(long id_usuario) {
+    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTareasHechasPorUnUsuarioEnCadaSector(long id_usuario) {
         try (Connection conn = sql2o.open()) {
             List<TareasHechasPorUnUsuarioEnSectorDTO> tareasPorSector;
             String query = "SELECT s.id_sector, COALESCE(COUNT(th.id_tarea), 0) AS tareas_hechas " +

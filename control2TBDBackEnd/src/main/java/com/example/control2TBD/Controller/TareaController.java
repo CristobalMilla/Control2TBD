@@ -83,7 +83,8 @@ public class TareaController {
 
     // ¿Cuántas tareas ha hecho el usuario por sector?
     @GetMapping("/porSector/{idUsuario}")
-    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTaresHechasPorUnUsuarioEnCadaSector(@PathVariable("idUsuario") long id_usuario) {
+    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTareasHechasPorUnUsuarioEnCadaSector(@PathVariable("idUsuario") long id_usuario) {
+        System.out.println(id_usuario);
         return tareaService.getTaresHechasPorUnUsuarioEnCadaSector(id_usuario);
     }
 

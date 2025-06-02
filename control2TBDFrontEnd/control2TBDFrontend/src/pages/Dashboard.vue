@@ -7,7 +7,10 @@ import Query5 from '../components/QuestionCards/Question5.vue'
 import Query6 from '../components/QuestionCards/Question6.vue'*/
 import Query7 from '../components/QuestionCards/Question7.vue'
 import Query8 from '../components/QuestionCards/Question8.vue'
-/*import Query9 from '../components/QuestionCards/Question9.vue'*/
+import Query9 from '../components/QuestionCards/Question9.vue'
+import { getAllTasksPerUserPerSector } from "@/api/tasks";
+import { getSectorMostCompletedByUser } from "@/api/tasks";
+import { getAverageCompletedDistance } from "@/api/tasks";
 
 import { ref } from 'vue'
 
@@ -24,6 +27,10 @@ const questions = ref([
                   {name: "¿Cuál es el sector con más tareas completadas dentro de un radio de 5 km desde la ubicación del usuario?", opt: 8},
                   {name: "¿Cuál es el promedio de distancia entre las tareas completadas y el punto registrado del usuario?", opt: 9}
                   ]);
+
+const tasksBySectorAndUser = ref([]); // Nuevo estado para almacenar la consulta de la pregunta 7
+const sectorMostCompleted = ref(null); // Estado para almacenar el sector de la consulta 8
+const averageCompletedDistance = ref(null); // Estado para almacenar el promedio de la pregunta 9
 </script>
 
 <template>

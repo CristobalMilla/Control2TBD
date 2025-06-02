@@ -38,7 +38,7 @@
             <input
                 id="fecha_vencimiento"
                 v-model="formData.fecha_vencimiento"
-                type="datetime-local"
+                type="date"
                 class="form-input"
                 required
             />
@@ -178,7 +178,7 @@ export default {
         const taskData = {
           titulo: this.formData.titulo.trim(),
           descripcion: this.formData.descripcion.trim(),
-          fecha_vencimiento: new Date(this.formData.fecha_vencimiento).toISOString(),
+          fecha_vencimiento: new Date(this.formData.fecha_vencimiento).toISOString().split('T')[0],
           id_usuario: this.formData.id_usuario,
           id_sector: this.formData.id_sector,
           estado: this.formData.estado,

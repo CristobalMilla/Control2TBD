@@ -5,6 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+// Ejecutar con el comando:
+// .\mvnw spring-boot:run
+// para cargar correctamente la confguración de maven, independientemente del IDE.
+
 @SpringBootApplication
 public class Control2TbdApplication {
 

@@ -58,7 +58,7 @@ public class TareaRepository {
     }
 
     // Eliminar Tarea
-    public void deleteTarea(int id_tarea) {
+    public void deleteTarea(Long id_tarea) {
         String sql = "DELETE FROM tarea WHERE id_tarea = :id_tarea";
         try (Connection conn = sql2o.open()) {
             conn.createQuery(sql)
@@ -68,7 +68,7 @@ public class TareaRepository {
     }
 
     // Marcar Tarea como Completada
-    public void markTareaCompleted(int id_tarea) {
+    public void markTareaCompleted(Long id_tarea) {
         String sql = "UPDATE tarea SET estado = 'Completada' WHERE id_tarea = :id_tarea";
         try (Connection conn = sql2o.open()) {
             conn.createQuery(sql)
@@ -96,7 +96,7 @@ public class TareaRepository {
         }
     }
 
-    public TareaEntity getTareaById(int id_tarea) {
+    public TareaEntity getTareaById(Long id_tarea) {
         String sql = "SELECT * FROM tarea WHERE id_tarea = :id_tarea";
         try (Connection conn = sql2o.open()) {
             return conn.createQuery(sql)
@@ -190,7 +190,7 @@ public class TareaRepository {
     //Tomara al primero, aunque hayan empates
     //Se puede devolver el sector completo si es necesario
     //Se asume que son las tareas completadas por el usuario, si no, eliminar 4ta linea
-    public int getSectorWithMostCompletedTareasNearby(Long id_usuario) {
+    public Long getSectorWithMostCompletedTareasNearby(Long id_usuario) {
         String sql = "SELECT s.id_sector " +
                 "FROM tarea t " +
                 "JOIN sector_entity s ON t.id_sector = s.id_sector " +
@@ -204,7 +204,7 @@ public class TareaRepository {
         try (Connection conn = sql2o.open()) {
             return conn.createQuery(sql)
                     .addParameter("id_usuario", id_usuario)
-                    .executeAndFetchFirst(Integer.class);
+                    .executeAndFetchFirst(Long.class);
         }
     }
     // 9) Funcion que devuelve el promedio de las distancias entre todas las tareas completadas y la ubicacion del usuario
@@ -230,7 +230,7 @@ public class TareaRepository {
 
     // ¿Cuántas tareas ha hecho el usuario por sector?
     // Voy a suponer que hechas == completadas
-    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTareasHechasPorUnUsuarioEnCadaSector(long id_usuario) {
+    public List<TareasHechasPorUnUsuarioEnSectorDTO> getTareasHechasPorUnUsuarioEnCadaSector(Long id_usuario) {
         try (Connection conn = sql2o.open()) {
             List<TareasHechasPorUnUsuarioEnSectorDTO> tareasPorSector;
             String query = "SELECT s.id_sector, COALESCE(COUNT(th.id_tarea), 0) AS tareas_hechas " +
@@ -251,7 +251,7 @@ public class TareaRepository {
     }
 
     // ¿Cuál es la tarea más cercana al usuario (que esté pendiente)?
-    public TareaEntity getTareaMasCercanaAUnUsuario(long id_usuario) {
+    public TareaEntity getTareaMasCercanaAUnUsuario(Long id_usuario) {
         try (Connection conn = sql2o.open()) {
             TareaEntity tareaMasCercana;
             String query = "SELECT t.* " +
@@ -273,7 +273,7 @@ public class TareaRepository {
     // ¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetro del usuario?
     // Se toma el primero a pesar de que pueden haber varios con las mismas tareas completadas
     // Falta la entidad sector
-    public SectorEntity getSectorCercanoConMasTareasCompletadas(long id_usuario){
+    public SectorEntity getSectorCercanoConMasTareasCompletadas(Long id_usuario){
         try (Connection conn = sql2o.open()) {
             SectorEntity sector;
             String query = "SELECT * " +
@@ -298,7 +298,7 @@ public class TareaRepository {
         }
     }
 
-    public List<TareaEntity> getTareasProximasAVencer(long id_usuario) {
+    public List<TareaEntity> getTareasProximasAVencer(Long id_usuario) {
         String sql = "SELECT t.* " +
                      "FROM tarea t " +
                      "WHERE t.id_usuario = :id_usuario " +

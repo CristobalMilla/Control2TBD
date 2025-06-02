@@ -22,7 +22,7 @@ public class SectorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SectorEntity> findById(@PathVariable Integer id) {
+    public ResponseEntity<SectorEntity> findById(@PathVariable Long id) {
         SectorEntity sector = sectorService.findById(id);
         if (sector == null) {
             return ResponseEntity.notFound().build();
@@ -40,7 +40,7 @@ public class SectorController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<SectorEntity> update(@PathVariable Integer id, @RequestBody SectorEntity sector) {
+    public ResponseEntity<SectorEntity> update(@PathVariable Long id, @RequestBody SectorEntity sector) {
         if (!sectorService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
@@ -51,7 +51,7 @@ public class SectorController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         if (!sectorService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
@@ -61,7 +61,7 @@ public class SectorController {
 
 
     @GetMapping("/exists/{id}")
-    public boolean existsById(@PathVariable Integer id) {
+    public boolean existsById(@PathVariable Long id) {
         return sectorService.existsById(id);
     }
 }

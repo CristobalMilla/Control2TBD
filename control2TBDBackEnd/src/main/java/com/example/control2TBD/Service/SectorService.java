@@ -22,7 +22,7 @@ public class SectorService {
     }
 
 
-    public SectorEntity findById(Integer id) {
+    public SectorEntity findById(Long id) {
         return sectorRepository.findById(id);
     }
 
@@ -37,11 +37,11 @@ public class SectorService {
     }
 
 
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         sectorRepository.deleteById(id);
     }
 
-    public boolean existsById(Integer id) {
+    public boolean existsById(Long id) {
         return sectorRepository.existsById(id);
     }
 

@@ -34,20 +34,20 @@ public class TareaController {
 
     // Editar Tarea
     @PutMapping("/{id}")
-    public void updateTarea(@PathVariable("id") int id, @RequestBody TareaEntity tarea) {
+    public void updateTarea(@PathVariable("id") Long id, @RequestBody TareaEntity tarea) {
         tarea.setId_tarea(id);
         tareaService.updateTarea(tarea);
     }
 
     // Eliminar Tarea
     @DeleteMapping("/{id}")
-    public void deleteTarea(@PathVariable("id") int id) {
+    public void deleteTarea(@PathVariable("id") Long id) {
         tareaService.deleteTarea(id);
     }
 
     // Marcar Tarea como Completada
     @PutMapping("/{id}/complete")
-    public void markTareaCompleted(@PathVariable("id") int id) {
+    public void markTareaCompleted(@PathVariable("id") Long id) {
         tareaService.markTareaCompleted(id);
     }
 
@@ -62,7 +62,7 @@ public class TareaController {
 
     // Obtener tarea por Id
     @GetMapping("/{id}")
-    public TareaEntity getTareaById(@PathVariable("id") int id) {
+    public TareaEntity getTareaById(@PathVariable("id") Long id) {
         return tareaService.getTareaById(id);
     }
 
@@ -115,7 +115,7 @@ public class TareaController {
 
     // 8) Funcion que obtiene el sector con mas tareas compleadas en un rango de 5 KM del usuario
     @GetMapping("/SectorMostCompletedByUser/{id}")
-    public int getSectorWithMostCompletedTareasNearby(@PathVariable Long id){
+    public Long getSectorWithMostCompletedTareasNearby(@PathVariable Long id){
         return tareaService.getSectorWithMostCompletedTareasNearby(id);
     }
 
@@ -134,19 +134,19 @@ public class TareaController {
 
     // ¿Cuál es la tarea más cercana al usuario (que esté pendiente)?
     @GetMapping("/masCercana/{idUsuario}")
-    public TareaEntity getMasCercanaAUnUsuario(@PathVariable("idUsuario") long id_usuario) {
+    public TareaEntity getMasCercanaAUnUsuario(@PathVariable("idUsuario") Long id_usuario) {
         return tareaService.getMasCercanaAUnUsuario(id_usuario);
     }
 
     // ¿Cuál es el sector con más tareas completadas en un radio de 2 kilómetros del usuario?
     @GetMapping("/sectorMasCompletadas/{idUsuario}")
-    public SectorEntity getSectorCercanoConMasTareasCompletadas(@PathVariable("idUsuario") long id_usuario){
+    public SectorEntity getSectorCercanoConMasTareasCompletadas(@PathVariable("idUsuario") Long id_usuario){
         return tareaService.getSectorCercanoConMasTareasCompletadas(id_usuario);
     }
 
     // Obtener tareas próximas a vencer para un usuario
     @GetMapping("/proximasAVencer/{idUsuario}")
-    public List<TareaEntity> getTareasProximasAVencer(@PathVariable("idUsuario") long id_usuario) {
+    public List<TareaEntity> getTareasProximasAVencer(@PathVariable("idUsuario") Long id_usuario) {
         return tareaService.getTareasProximasAVencer(id_usuario);
     }
 }

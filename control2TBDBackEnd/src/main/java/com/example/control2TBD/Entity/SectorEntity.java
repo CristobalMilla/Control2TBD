@@ -18,7 +18,7 @@ public class SectorEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_sector;
+    private Long id_sector;
     
     @Column(columnDefinition = "geometry(Polygon, 4326)")
     private Polygon ubicacion;

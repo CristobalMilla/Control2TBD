@@ -29,11 +29,11 @@ public class TareaService {
         tareaRepository.updateTarea(tarea);
     }
 
-    public void deleteTarea(int id_tarea) {
+    public void deleteTarea(Long id_tarea) {
         tareaRepository.deleteTarea(id_tarea);
     }
 
-    public void markTareaCompleted(int id_tarea) {
+    public void markTareaCompleted(Long id_tarea) {
         tareaRepository.markTareaCompleted(id_tarea);
     }
 
@@ -45,7 +45,7 @@ public class TareaService {
         return tareaRepository.getTareasByEstado(estado);
     }
 
-    public TareaEntity getTareaById(int id_tarea) {
+    public TareaEntity getTareaById(Long id_tarea) {
         return tareaRepository.getTareaById(id_tarea);
     }
 
@@ -70,7 +70,7 @@ public class TareaService {
         return tareaRepository.getTareasPerUsuarioPerSector();
     }
     // 8)
-    public int getSectorWithMostCompletedTareasNearby(Long id_usuario){
+    public Long getSectorWithMostCompletedTareasNearby(Long id_usuario){
         return tareaRepository.getSectorWithMostCompletedTareasNearby(id_usuario);
     }
     // 9)
@@ -82,15 +82,15 @@ public class TareaService {
         return tareaRepository.getTareasHechasPorUnUsuarioEnCadaSector(id_usuario);
     }
 
-    public TareaEntity getMasCercanaAUnUsuario(long id_usuario){
+    public TareaEntity getMasCercanaAUnUsuario(Long id_usuario){
         return tareaRepository.getTareaMasCercanaAUnUsuario(id_usuario);
     }
 
-    public SectorEntity getSectorCercanoConMasTareasCompletadas(long id_usuario){
+    public SectorEntity getSectorCercanoConMasTareasCompletadas(Long id_usuario){
         return tareaRepository.getSectorCercanoConMasTareasCompletadas(id_usuario);
     }
 
-    public List<TareaEntity> getTareasProximasAVencer(long id_usuario) {
+    public List<TareaEntity> getTareasProximasAVencer(Long id_usuario) {
         return tareaRepository.getTareasProximasAVencer(id_usuario);
     }
 }

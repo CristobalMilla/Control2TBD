@@ -29,7 +29,7 @@ public class SectorRepository {
 
     private SectorEntity mapToSectorEntity(Map<String, Object> row) {
         SectorEntity sector = new SectorEntity();
-        sector.setId_sector((Integer) row.get("id_sector"));
+        sector.setId_sector((Long) row.get("id_sector"));
         String wkt = (String) row.get("ubicacion_wkt");
         if (wkt != null) {
             try {
@@ -60,7 +60,7 @@ public class SectorRepository {
         }
 
     }
-    public SectorEntity findById(Integer id) {
+    public SectorEntity findById(Long id) {
         String sql = "SELECT id_sector, ST_AsText(ubicacion) as ubicacion_wkt FROM sector_entity WHERE id_sector = :id";
         try (Connection conn = sql2o.open()) {
             List<Map<String, Object>> results = conn.createQuery(sql)
@@ -74,7 +74,7 @@ public class SectorRepository {
         }
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         String sql = "DELETE FROM sector_entity WHERE id_sector = :id";
         try (Connection conn = sql2o.open()) {
             conn.createQuery(sql)
@@ -102,16 +102,16 @@ public class SectorRepository {
                     .addParameter("ubicacion", wkt)
                     .executeAndFetchFirst(Integer.class);
 
-            sector.setId_sector(generatedId);
+            sector.setId_sector(Long.valueOf(generatedId));
             return sector;
         }
     }
-    public boolean existsById(Integer id) {
+    public boolean existsById(Long id) {
         String sql = "SELECT COUNT(*) FROM sector_entity WHERE id_sector = :id";
         try (Connection conn = sql2o.open()) {
-            Integer count = conn.createQuery(sql)
+            Long count = conn.createQuery(sql)
                     .addParameter("id", id)
-                    .executeScalar(Integer.class);
+                    .executeScalar(Long.class);
             return count != null && count > 0;
         }
     }

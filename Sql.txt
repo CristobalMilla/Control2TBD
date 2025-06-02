@@ -25,8 +25,8 @@ CREATE TABLE tarea (
     titulo VARCHAR(20) NOT NULL,
     descripcion VARCHAR(50),
     fecha_vencimiento DATE NOT NULL,
-    id_usuario INT NOT NULL,
-    id_sector INT NOT NULL,
+    id_usuario BIGINT NOT NULL,
+    id_sector BIGINT NOT NULL,
     estado VARCHAR(10) NOT NULL,
     CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES usuario_entity(id_usuario),
     CONSTRAINT fk_sector FOREIGN KEY (id_sector) REFERENCES sector_entity(id_sector)

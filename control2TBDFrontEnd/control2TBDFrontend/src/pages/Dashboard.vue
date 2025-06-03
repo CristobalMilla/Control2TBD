@@ -68,7 +68,7 @@ const goToTaskDetails = () => {
     <v-main>
       <v-row>
         <v-col cols="12" md="6">
-          <h1>Panel de Control</h1>
+          <h1>Consultas</h1>
 
           <v-select
             v-model="selected_query"

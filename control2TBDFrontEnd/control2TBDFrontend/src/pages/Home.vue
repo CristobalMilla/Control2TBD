@@ -4,7 +4,7 @@
       <v-app-bar-title class="d-flex align-center">
         <v-btn variant="text" @click="$router.push('/dashboard')" class="d-flex align-center">
           <v-icon size="24" class="mr-2">mdi-view-dashboard</v-icon>
-          Dashboard
+          Consultas
         </v-btn>
       </v-app-bar-title>
       <v-spacer></v-spacer>

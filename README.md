@@ -1,4 +1,4 @@
-###### Control2TBD ######
+## Control2TBD ##
 
 Trabajo de control 2 para Taller de Base de Datos.
 Este proyecto se compone de 3 apartados:
@@ -7,20 +7,20 @@ Este proyecto se compone de 3 apartados:
 2. Backend
 3. Frontend
 
-###### Requisitos Previos ######
+## Requisitos Previos ##
 
 - Java JDK (17) para el backend.
 - Node.js (Para Vue) y npm para el frontend.
 - PostgreSQL como motor de base de datos.
 - Sistema operativo Windows.
 
-###### 1. Población de la Base de Datos ######
+## 1. Población de la Base de Datos ##
 
 1. Crear una base de datos llamada control2TBD
 2. Ejecutar todo el contenido del archivo Sql.txt ubicado en la raiz del proyecto.
 3. Ejecutar todo el contenido del archivo PoblarSectoresComunas.sql ubicado en la raiz del proyecto.
 
-###### 2. Backend ######
+## 2. Backend ##
 
 Abrir terminal en la raiz del backend: Control2TBD\control2TBDBackEnd
 Ejecuta estos comandos en la terminal antes de iniciar el backend:
@@ -33,7 +33,7 @@ Para ejecutar el backend, abre una terminal en esta carpeta y ejecuta el siguien
 
 .\mvnw spring-boot:run
 
-###### 3. Frontend ######
+## 3. Frontend ##
 
 El código del frontend se encuentra en:
 

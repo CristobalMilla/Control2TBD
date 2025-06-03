@@ -1,51 +1,74 @@
-## Control2TBD ##
+# Control2TBD
 
-Trabajo de control 2 para Taller de Base de Datos.
-Este proyecto se compone de 3 apartados:
+**Trabajo de Control 2 para Taller de Base de Datos**
 
-1. Población de la Base de Datos
-2. Backend
-3. Frontend
+Este proyecto se compone de tres partes principales:
 
-## Requisitos Previos ##
+1. 🛠️ Población de la Base de Datos
+2. 🔧 Backend
+3. 🎨 Frontend
 
-- Java JDK (17) para el backend.
-- Node.js (Para Vue) y npm para el frontend.
-- PostgreSQL como motor de base de datos.
-- Sistema operativo Windows.
+---
 
-## 1. Población de la Base de Datos ##
+## ✅ Requisitos Previos
 
-1. Crear una base de datos llamada control2TBD
-2. Ejecutar todo el contenido del archivo Sql.txt ubicado en la raiz del proyecto.
-3. Ejecutar todo el contenido del archivo PoblarSectoresComunas.sql ubicado en la raiz del proyecto.
+Antes de comenzar, asegúreate de tener instalados:
 
-## 2. Backend ##
+* ☕ **Java JDK 17** – Para el backend
+* 🌐 **Node.js** y **npm** – Para el frontend con Vue
+* 🐘 **PostgreSQL** – Motor de base de datos
+* 💥 **Windows** – Sistema operativo recomendado
 
-Abrir terminal en la raiz del backend: Control2TBD\control2TBDBackEnd
-Ejecuta estos comandos en la terminal antes de iniciar el backend:
+---
+
+## 1️⃣ Población de la Base de Datos
+
+1. Crear una base de datos llamada `control2TBD` en PostgreSQL
+2. Ejecutar el contenido del archivo `Sql.txt` (ubicado en la raíz del proyecto)
+3. Ejecutar el archivo `PoblarSectoresComunas.sql` (tambien en la raíz)
+
+---
+
+## 2️⃣ Backend
+
+📂 Ruta: `Control2TBD/control2TBDBackEnd`
+
+### 🔧 Configurar variables de entorno
+
+Abre una terminal en la carpeta del backend y ejecuta:
+
+```bash
 set DATABASE_URL=jdbc:postgresql://localhost:5432/control2TBD
 set DATABASE_USER=tu_usuario
 set DATABASE_PASSWORD=tu_contraseña
+```
 
-[¡IMPORTANTE!]
-Para ejecutar el backend, abre una terminal en esta carpeta y ejecuta el siguiente comando utilizando el Maven Wrapper:
+### ▶️ Ejecutar el backend
 
+Usa el Maven Wrapper incluido en el proyecto:
+
+```bash
 .\mvnw spring-boot:run
+```
 
-## 3. Frontend ##
+---
 
-El código del frontend se encuentra en:
+## 3️⃣ Frontend
 
-Control2TBD\control2TBDFrontEnd\control2TBDFrontend
+📂 Ruta: `Control2TBD/control2TBDFrontEnd/control2TBDFrontend`
 
-Pasos para ejecutar el Frontend:
-1. Abre una terminal en la carpeta del Frontend.
-2. Instala las dependencias:
+### 🔽️ Instalar dependencias
 
+```bash
 npm install
+```
 
-3. Ejecuta el servidor de desarrollo:
+### ▶️ Ejecutar servidor de desarrollo
 
+```bash
 npm run dev
+```
+
+---
+
 

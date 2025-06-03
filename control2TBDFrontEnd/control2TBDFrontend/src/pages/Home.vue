@@ -80,73 +80,32 @@
           </v-col>
         </v-row>
 
-        <div class="actions-section my-8">
-          <v-btn
-            color="primary"
-            size="x-large"
-            prepend-icon="mdi-plus-circle"
-            class="px-6"
-            @click="createTask"
-          >
-            Nueva Tarea
-          </v-btn>
-          <v-btn
-            color="secondary"
-            size="x-large"
-            variant="outlined"
-            prepend-icon="mdi-format-list-bulleted"
-            class="px-6"
-            @click="viewAllTasks"
-          >
-            Ver Todas
-          </v-btn>
-        </div>
+        <!-- Se eliminaron los botones "Nueva Tarea" y "Ver Todas" -->
 
-        <v-card class="recent-tasks-section" elevation="2">
+        <v-card class="recent-tasks-section mt-8" elevation="2">
           <v-card-title class="d-flex align-center pa-6 bg-grey-lighten-4">
             <v-icon size="28" color="primary" class="mr-3">mdi-clipboard-text</v-icon>
-            <span class="text-h5">Tareas Recientes</span>
+            <span class="text-h5">Tus tareas</span>
           </v-card-title>
-
           <v-card-text class="pa-0">
-            <v-list v-if="recentTasks.length > 0" class="py-2">
-              <v-list-item
-                v-for="task in recentTasks"
-                :key="task.id"
-                :title="task.title"
-                :subtitle="task.description"
-                class="py-4 px-6"
-              >
-                <template v-slot:append>
-                  <v-btn
-                    icon="mdi-pencil"
-                    variant="text"
-                    color="primary"
-                    size="large"
-                    class="mr-2"
-                    @click="editTask(task.id)"
-                  ></v-btn>
-                  <v-btn
-                    icon="mdi-check-circle"
-                    variant="text"
-                    color="success"
-                    size="large"
-                    @click="completeTask(task.id)"
-                  ></v-btn>
-                </template>
-              </v-list-item>
-            </v-list>
+            <div v-if="recentTasks.length > 0" class="task-list">
+              <TaskCard 
+                v-for="task in recentTasks" 
+                :key="task.id_tarea" 
+                :tarea="task" 
+                @task-updated="handleTaskUpdated" 
+                @task-completed="handleTaskCompleted" 
+                @task-deleted="handleTaskDeleted"
+              />
+            </div>
             <v-card-text v-else class="text-center pa-12">
-              <v-icon
-                size="72"
-                color="grey-lighten-1"
-                class="mb-4"
-              >mdi-clipboard-text-outline</v-icon>
-              <div class="text-grey text-h6">No hay tareas recientes</div>
+              <v-icon size="72" color="grey-lighten-1" class="mb-4">
+                mdi-clipboard-text-outline
+              </v-icon>
+              <div class="text-grey text-h6">No hay tareas disponibles</div>
             </v-card-text>
           </v-card-text>
         </v-card>
-      </v-container>
 
       <!--
       <v-container>
@@ -186,6 +145,7 @@
       </v-container>
       -->
 
+      </v-container>
     </v-main>
   </v-container>
 </template>
@@ -193,21 +153,19 @@
 <script>
 import { logoutUser } from "@/services/auth";
 import NotificationBadge from '@/components/NotificationBadge.vue';
-
-//Pregunta 7
+import TaskCard from '@/components/TaskCard.vue'; // Importa el TaskCard
+// Pregunta 7
 import Question7 from "@/components/QuestionCards/Question7.vue";
-import { getAllTasksPerUserPerSector } from "@/api/tasks";
-//Pregunta 8
+import { getAllTasksPerUserPerSector, getSectorMostCompletedByUser, getAverageCompletedDistance, getUserTasks } from "@/api/tasks";
+// Pregunta 8 y 9
 import Question8 from "@/components/QuestionCards/Question8.vue";
-import { getSectorMostCompletedByUser } from "@/api/tasks";
-//Pregunta 9
 import Question9 from "@/components/QuestionCards/Question9.vue";
-import { getAverageCompletedDistance } from "@/api/tasks";
 
 export default {
   name: 'HomePage',
   components: {
     NotificationBadge,
+    TaskCard,
   },
   data() {
     return {
@@ -241,47 +199,74 @@ export default {
     createTask() {
       this.$router.push('/create-task')
     },
-    viewAllTasks() {
-      this.$router.push('/tasks')
+    handleTaskUpdated(updatedTask) {
+      // Actualiza la tarea en recentTasks según sea necesario
+      const index = this.recentTasks.findIndex(task => task.id_tarea === updatedTask.id_tarea);
+      if (index !== -1) {
+        this.$set(this.recentTasks, index, updatedTask);
+      }
     },
-    editTask(id) {
-      this.$router.push(`/edit-task/${id}`)
+    handleTaskCompleted(taskId) {
+      // Lógica para actualizar el estado de la tarea completada
+      const index = this.recentTasks.findIndex(task => task.id_tarea === taskId);
+      if (index !== -1) {
+        this.recentTasks[index].estado = 'completada';
+      }
     },
-    async completeTask(id) {
-      // Implementar lógica de completar tarea
+    handleTaskDeleted(taskId) {
+      // Remueve la tarea de recentTasks
+      this.recentTasks = this.recentTasks.filter(task => task.id_tarea !== taskId);
     },
     async fetchDashboardData() {
+      const userString = localStorage.getItem("user");
+      if (!userString) return;
+      const user = JSON.parse(userString);
+      if (!user?.id_usuario) return;
+      const userId = user.id_usuario;
+      
       try {
-        const userId = JSON.parse(localStorage.getItem("user")).id;
-
-        // Pregunta 7
-        //const tasksPerSector = await getAllTasksPerUserPerSector();
-        //this.sectorTasks = tasksPerSector;
-        //Pregunta 8
-        // Obtener el sector con más tareas completadas
-        //this.sectorMostCompleted = await getSectorMostCompletedByUser(userId);
-        //Pregunta 9
-        // Obtener el promedio de distancia
-        //this.averageCompletedDistance = await getAverageCompletedDistance(userId);
-
-        // Aquí irá la llamada a tu API
-        // Por ahora usamos datos de ejemplo
-        this.pendingTasks = 5
-        this.completedTasks = 3
-        this.recentTasks = [
-          { id: 1, title: 'Tarea de ejemplo', description: 'Esta es una tarea de ejemplo' }
-        ]
+        const userTasks = await getUserTasks(userId);
+        if (Array.isArray(userTasks)) {
+          this.recentTasks = userTasks;
+          this.pendingTasks = userTasks.filter(task => task.estado?.toLowerCase() === 'pendiente').length;
+          this.completedTasks = userTasks.filter(task => task.estado?.toLowerCase() === 'completada').length;
+        }
       } catch (error) {
-        console.error('Error al obtener datos:', error)
+        console.error('Error al obtener tareas del usuario:', error);
+      }
+      
+      try {
+        const tasksPerSector = await getAllTasksPerUserPerSector();
+        this.sectorTasks = tasksPerSector;
+      } catch (error) {
+        console.error('Error al obtener tareas por sector:', error);
+        this.sectorTasks = [];
+      }
+      
+      try {
+        this.sectorMostCompleted = await getSectorMostCompletedByUser(userId);
+      } catch (error) {
+        console.error('Error al obtener sector más completado:', error);
+        this.sectorMostCompleted = null;
+      }
+      
+      try {
+        this.averageCompletedDistance = await getAverageCompletedDistance(userId);
+      } catch (error) {
+        console.error('Error al obtener promedio de distancia:', error);
+        this.averageCompletedDistance = null;
       }
     }
   },
   mounted() {
-    this.fetchDashboardData()
-    const storedUser = JSON.parse(localStorage.getItem("user"))
-    if (storedUser && storedUser.nickname) {
-      this.nickname = storedUser.nickname
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const storedUser = JSON.parse(userString);
+      if (storedUser?.nickname) {
+        this.nickname = storedUser.nickname;
+      }
     }
+    this.fetchDashboardData();
   }
 }
 </script>

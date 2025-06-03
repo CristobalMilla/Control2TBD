@@ -128,13 +128,12 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const tasks = ref([])
-const filteredTasks = ref(null) // Iniciar como null para distinguir de un array vacío por filtro
+const filteredTasks = ref(null)
 const loading = ref(false)
 const showCreateModal = ref(false)
 const taskFilter = ref(null)
 
-// displayTasks ahora usará filteredTasks si ha sido establecido (incluso si es un array vacío por un filtro)
-// de lo contrario, usará la lista completa de tasks (antes de que el filtro emita por primera vez)
+
 const displayTasks = computed(() => {
   if (filteredTasks.value !== null) {
     return filteredTasks.value;
@@ -144,11 +143,9 @@ const displayTasks = computed(() => {
 
 const fetchTasks = async () => {
   loading.value = true
-  filteredTasks.value = null; // Resetear al cargar nuevas tareas
+  filteredTasks.value = null;
   try {
-    const response = await getTasks()
-    tasks.value = response
-    // No establecemos filteredTasks aquí directamente; esperamos al evento de TaskFilter
+    tasks.value = await getTasks()
   } catch (error) {
     console.error('Error fetching tasks:', error)
   } finally {

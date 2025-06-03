@@ -26,7 +26,7 @@ export const getTasksBySector = async (sectorId) => {
 
 export const getAllTasksPerUserPerSector = async () => {
   const response = await axiosTasks.get("/tareas/allTareasPerUserPerSector");
-  return response.data; // Asegúrate de que el backend devuelve los datos en el formato esperado
+  return response.data;
 };
 
 //Pregunta 8

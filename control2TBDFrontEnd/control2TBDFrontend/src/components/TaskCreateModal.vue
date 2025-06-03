@@ -208,7 +208,7 @@ const handleSubmit = async () => {
 
 watch(() => props.isVisible, (newValue) => {
   if (newValue) {
-    // Pre-llenar el ID de usuario del localStorage cuando se abre el modal
+
     const usuario = JSON.parse(localStorage.getItem('user'))
     if (usuario?.id_usuario) {
       formData.value.id_usuario = usuario.id_usuario

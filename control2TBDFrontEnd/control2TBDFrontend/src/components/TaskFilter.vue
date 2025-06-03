@@ -111,14 +111,13 @@ export default {
     }
   },
   watch: {
-    // Observa la propiedad computada interna filteredTasks
+
     filteredTasks(newFilteredTasks) {
       this.$emit('filtered-tasks', newFilteredTasks);
     }
   },
   mounted() {
-    // Emitir el estado inicial de las tareas filtradas (que serán todas las tareas si no hay filtros)
-    // Esto asegura que TaskDetails.vue reciba la lista completa inicialmente.
+
     if (this.tasks.length > 0) {
         this.$emit('filtered-tasks', this.filteredTasks);
     }
@@ -127,7 +126,7 @@ export default {
     clearFilters() {
       this.filters.searchText = ''
       this.filters.estado = ''
-      // El watch en filteredTasks se encargará de emitir la actualización
+
     },
     clearSearchFilter() {
       this.filters.searchText = ''

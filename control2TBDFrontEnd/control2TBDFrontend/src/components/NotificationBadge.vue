@@ -125,7 +125,7 @@ export default {
     },
     loadCredentials() {
       const storedUser = JSON.parse(localStorage.getItem("user"));
-      const storedToken = localStorage.getItem("token"); // o "jwtToken" según tu estándar
+      const storedToken = localStorage.getItem("token");
 
       console.log("Stored User:", storedUser);
       console.log("Stored Token:", storedToken);
@@ -151,10 +151,6 @@ export default {
     if (this.userId && this.token) {
       this.fetchUpcomingTasks(true); // Carga inicial para el badge
     }
-    // Opcional: Refrescar periódicamente
-    // setInterval(() => {
-    //   if (this.userId && this.token) this.fetchUpcomingTasks(true);
-    // }, 300000); // Cada 5 minutos
   },
 };
 </script>

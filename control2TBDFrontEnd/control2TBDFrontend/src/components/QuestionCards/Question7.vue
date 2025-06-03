@@ -14,8 +14,6 @@ onMounted(async () => {
 
 </script>
 
-
-
 <template>
   <v-container>
     <v-card class="sector-tasks-section mt-8" elevation="2">
@@ -32,14 +30,14 @@ onMounted(async () => {
             class="py-4 px-6"
             >
             <v-list-item-content>
-              <v-list-item-title>{{ task.id_sector }}</v-list-item-title>
-              <v-list-item-subtitle>{{ task.id_usuario }}</v-list-item-subtitle>
-              <v-list-item-subtitle>{{ task.numero_de_tareas }}</v-list-item-subtitle>
+              <v-list-item-title>Id del sector: {{ task.id_sector }}</v-list-item-title>
+              <v-list-item-subtitle>Id del usuario: {{ task.id_usuario }}</v-list-item-subtitle>
+              <v-list-item-subtitle>Numero de tareas: {{ task.numero_de_tareas }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <div v-else class="text-center text-grey pa-6">
-          No hay tareas disponibles para este sector.
+          No hay tareas completadas.
         </div>
       </div>
       </v-card-text>

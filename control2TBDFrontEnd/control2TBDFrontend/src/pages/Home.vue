@@ -161,7 +161,7 @@
         </v-card>
       </v-container>
       -->
-      <!-- Card de la Pregunta 8 -->
+      <!-- Card de la Pregunta 8 
       <v-container>
         <v-card class="mt-8">
           <v-card-title>
@@ -172,7 +172,8 @@
           </v-card-text>
         </v-card>
       </v-container>
-      <!-- Card de la pregunta 9 -->
+      -->
+      <!-- Card de la pregunta 9 
       <v-container>
         <v-card class="mt-8">
           <v-card-title>
@@ -183,6 +184,7 @@
           </v-card-text>
         </v-card>
       </v-container>
+      -->
 
     </v-main>
   </v-container>
@@ -206,9 +208,6 @@ export default {
   name: 'HomePage',
   components: {
     NotificationBadge,
-    Question7,
-    Question8,
-    Question9,
   },
   data() {
     return {
@@ -216,8 +215,6 @@ export default {
       pendingTasks: 0,
       completedTasks: 0,
       recentTasks: [],
-      sectorMostCompleted: null,
-      averageCompletedDistance: null,
     }
   },
   computed: {
@@ -262,10 +259,10 @@ export default {
         //this.sectorTasks = tasksPerSector;
         //Pregunta 8
         // Obtener el sector con más tareas completadas
-        this.sectorMostCompleted = await getSectorMostCompletedByUser(userId);
+        //this.sectorMostCompleted = await getSectorMostCompletedByUser(userId);
         //Pregunta 9
         // Obtener el promedio de distancia
-        this.averageCompletedDistance = await getAverageCompletedDistance(userId);
+        //this.averageCompletedDistance = await getAverageCompletedDistance(userId);
 
         // Aquí irá la llamada a tu API
         // Por ahora usamos datos de ejemplo

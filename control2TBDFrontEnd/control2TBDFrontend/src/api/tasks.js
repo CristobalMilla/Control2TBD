@@ -31,20 +31,14 @@ export const getAllTasksPerUserPerSector = async () => {
 //Pregunta 8
 
 export const getSectorMostCompletedByUser = async (id_usuario) => {
-  const response = await axiosInstance.get(
-    `/tareas/SectorMostCompletedByUser`,
-    { params: { id_usuario } }
-  );
+  const response = await axiosInstance.get(`/tareas/SectorMostCompletedByUser/` + id_usuario);
   return response.data;
 };
 
 //Pregunta 9
 
 export const getAverageCompletedDistance = async (id_usuario) => {
-  const response = await axiosInstance.get(
-    `/tareas/AverageCompletedUser`,
-    { params: { id_usuario } }
-  );
+  const response = await axiosInstance.get(`/tareas/AverageCompletedUser/` + id_usuario);
   return response.data;
 };
 

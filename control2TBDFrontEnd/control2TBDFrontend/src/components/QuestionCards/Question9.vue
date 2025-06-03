@@ -1,3 +1,18 @@
+<script setup>
+
+import { ref, onMounted } from 'vue';
+import { getSectorMostCompletedByUser } from "@/api/tasks";
+
+const averageDistance = ref(null);
+const userId = JSON.parse(localStorage.getItem("user")).id;
+onMounted(async () => {
+  // Pregunta 8
+  const response = await getSectorMostCompletedByUser(userId);
+  averageDistance.value = response;
+});
+
+</script>
+
 <template>
   <div>
     <v-card class="average-distance-card pa-6">

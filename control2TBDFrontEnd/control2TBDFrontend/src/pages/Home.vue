@@ -87,35 +87,17 @@
             <v-icon size="28" color="primary" class="mr-3">mdi-clipboard-text</v-icon>
             <span class="text-h5">Tus tareas</span>
           </v-card-title>
-
           <v-card-text class="pa-0">
-            <v-list v-if="recentTasks.length > 0" class="py-2">
-              <v-list-item
-                v-for="task in recentTasks"
-                :key="task.id_tarea"
-                :title="task.titulo"
-                :subtitle="task.descripcion"
-                class="py-4 px-6"
-              >
-                <template v-slot:append>
-                  <v-btn
-                    icon="mdi-pencil"
-                    variant="text"
-                    color="primary"
-                    size="large"
-                    class="mr-2"
-                    @click="editTask(task.id_tarea)"
-                  ></v-btn>
-                  <v-btn
-                    icon="mdi-check-circle"
-                    variant="text"
-                    color="success"
-                    size="large"
-                    @click="completeTask(task.id_tarea)"
-                  ></v-btn>
-                </template>
-              </v-list-item>
-            </v-list>
+            <div v-if="recentTasks.length > 0" class="task-list">
+              <TaskCard 
+                v-for="task in recentTasks" 
+                :key="task.id_tarea" 
+                :tarea="task" 
+                @task-updated="handleTaskUpdated" 
+                @task-completed="handleTaskCompleted" 
+                @task-deleted="handleTaskDeleted"
+              />
+            </div>
             <v-card-text v-else class="text-center pa-12">
               <v-icon size="72" color="grey-lighten-1" class="mb-4">
                 mdi-clipboard-text-outline
@@ -168,22 +150,19 @@
 <script>
 import { logoutUser } from "@/services/auth";
 import NotificationBadge from '@/components/NotificationBadge.vue';
+import TaskCard from '@/components/TaskCard.vue'; // Importa el TaskCard
 // Pregunta 7
 import Question7 from "@/components/QuestionCards/Question7.vue";
-import { getAllTasksPerUserPerSector } from "@/api/tasks";
-// Pregunta 8
+import { getAllTasksPerUserPerSector, getSectorMostCompletedByUser, getAverageCompletedDistance, getUserTasks } from "@/api/tasks";
+// Pregunta 8 y 9
 import Question8 from "@/components/QuestionCards/Question8.vue";
-import { getSectorMostCompletedByUser } from "@/api/tasks";
-// Pregunta 9
 import Question9 from "@/components/QuestionCards/Question9.vue";
-import { getAverageCompletedDistance } from "@/api/tasks";
-// Nuevo: obtener las tareas del usuario
-import { getUserTasks } from "@/api/tasks";
 
 export default {
   name: 'HomePage',
   components: {
     NotificationBadge,
+    TaskCard,
     Question7,
     Question8,
     Question9,
@@ -194,7 +173,7 @@ export default {
       pendingTasks: 0,
       completedTasks: 0,
       recentTasks: [],
-      sectorTasks: [], // Inicializado para evitar errores si Question7 se renderiza antes de que los datos estén listos
+      sectorTasks: [],
       sectorMostCompleted: null,
       averageCompletedDistance: null,
     }
@@ -223,82 +202,62 @@ export default {
     createTask() {
       this.$router.push('/create-task')
     },
-    viewAllTasks() {
-      this.$router.push('/tasks')
+    handleTaskUpdated(updatedTask) {
+      // Actualiza la tarea en recentTasks según sea necesario
+      const index = this.recentTasks.findIndex(task => task.id_tarea === updatedTask.id_tarea);
+      if (index !== -1) {
+        this.$set(this.recentTasks, index, updatedTask);
+      }
     },
-    editTask(id) {
-      this.$router.push(`/edit-task/${id}`)
+    handleTaskCompleted(taskId) {
+      // Lógica para actualizar el estado de la tarea completada
+      const index = this.recentTasks.findIndex(task => task.id_tarea === taskId);
+      if (index !== -1) {
+        this.recentTasks[index].estado = 'completada';
+      }
     },
-    async completeTask(id) {
-      // Implementar lógica de completar tarea
-      console.log('Completar tarea ID:', id);
-      // Considera recargar los datos o actualizar el estado localmente
-      // await this.fetchDashboardData(); 
+    handleTaskDeleted(taskId) {
+      // Remueve la tarea de recentTasks
+      this.recentTasks = this.recentTasks.filter(task => task.id_tarea !== taskId);
     },
     async fetchDashboardData() {
       const userString = localStorage.getItem("user");
-      if (!userString) {
-        console.error('Usuario no encontrado en localStorage.');
-        this.recentTasks = [];
-        this.pendingTasks = 0;
-        this.completedTasks = 0;
-        return;
-      }
-
+      if (!userString) return;
       const user = JSON.parse(userString);
-      if (!user || typeof user.id_usuario === 'undefined') {
-        console.error('ID de usuario (id_usuario) no encontrado en el objeto de usuario de localStorage.');
-        this.recentTasks = [];
-        this.pendingTasks = 0;
-        this.completedTasks = 0;
-        return;
-      }
-      
+      if (!user?.id_usuario) return;
       const userId = user.id_usuario;
-
-      // Cargar tareas del usuario (primordial)
+      
       try {
         const userTasks = await getUserTasks(userId);
         if (Array.isArray(userTasks)) {
           this.recentTasks = userTasks;
-          this.pendingTasks = userTasks.filter(task => task.estado && task.estado.toLowerCase() === 'pendiente').length;
-          this.completedTasks = userTasks.filter(task => task.estado && task.estado.toLowerCase() === 'completada').length;
-        } else {
-          console.warn('getUserTasks no devolvió un array:', userTasks);
-          this.recentTasks = [];
-          this.pendingTasks = 0;
-          this.completedTasks = 0;
+          this.pendingTasks = userTasks.filter(task => task.estado?.toLowerCase() === 'pendiente').length;
+          this.completedTasks = userTasks.filter(task => task.estado?.toLowerCase() === 'completada').length;
         }
       } catch (error) {
-        console.error('Error al obtener las tareas del usuario:', error);
-        this.recentTasks = []; // Si falla la carga de tareas, se vacían
-        this.pendingTasks = 0;
-        this.completedTasks = 0;
-        // Puedes decidir si continuar con las otras llamadas o retornar aquí
+        console.error('Error al obtener tareas del usuario:', error);
       }
       
-      // Cargar datos adicionales del dashboard.
-      // Los errores aquí no deberían limpiar this.recentTasks.
       try {
-        const tasksPerSector = await getAllTasksPerUserPerSector(); 
+        const tasksPerSector = await getAllTasksPerUserPerSector();
         this.sectorTasks = tasksPerSector;
       } catch (error) {
         console.error('Error al obtener tareas por sector:', error);
-        this.sectorTasks = []; // Resetear solo esta parte o manejar como prefieras
+        this.sectorTasks = [];
       }
       
       try {
         this.sectorMostCompleted = await getSectorMostCompletedByUser(userId);
       } catch (error) {
-        console.error('Error al obtener sector con más tareas completadas (sospechado):', error);
-        this.sectorMostCompleted = null; // Resetear solo esta parte
+        console.error('Error al obtener sector más completado:', error);
+        this.sectorMostCompleted = null;
       }
       
       try {
         this.averageCompletedDistance = await getAverageCompletedDistance(userId);
       } catch (error) {
         console.error('Error al obtener promedio de distancia:', error);
-        this.averageCompletedDistance = null; // Resetear solo esta parte
+        this.averageCompletedDistance = null;
       }
     }
   },
@@ -306,12 +265,9 @@ export default {
     const userString = localStorage.getItem("user");
     if (userString) {
       const storedUser = JSON.parse(userString);
-      if (storedUser && storedUser.nickname) {
+      if (storedUser?.nickname) {
         this.nickname = storedUser.nickname;
       }
-    } else {
-      // Opcional: Redirigir a login si no hay usuario en localStorage al montar
-      // this.$router.push('/login');
     }
     this.fetchDashboardData();
   }

@@ -94,9 +94,8 @@
 </template>
 
 <script>
-import {deleteTask, markTaskAsDone, updateTask} from '../api/tasks'
 import {getUserById} from '../api/usuarios.js'
-
+import {deleteTask, getTaskById, markTaskAsDone, updateTask} from '../api/tasks'
 export default {
   name: 'TaskCard',
   props: {
@@ -196,32 +195,22 @@ export default {
     },
 
     async saveChanges() {
-      this.loading = true; // Indicar proceso de guardado
+      this.loading = true;
       try {
-        // El payload para updateTask debe coincidir con lo que espera la API.
-        // editForm.fecha_vencimiento ya está formateada para el input (YYYY-MM-DD)
-        const payload = {
-            titulo: this.editForm.titulo,
-            descripcion: this.editForm.descripcion,
-            fecha_vencimiento: this.editForm.fecha_vencimiento, // Asegúrate que este formato sea el esperado por el backend
-            id_sector: this.editForm.id_sector,
-            // Incluye otros campos si son editables, ej: estado, id_usuario (si es editable)
-        };
-        const updatedTaskDataFromServer = await updateTask(this.task.id_tarea, payload);
-
-        // Actualiza el estado local 'task' con la respuesta del servidor
-        this.task = { ...this.task, ...updatedTaskDataFromServer };
-        // Actualiza editForm para reflejar el estado guardado (para modo visualización)
-        this.initializeEditForm(); // Esto usará el this.task actualizado
-
-        this.$emit('task-updated', this.task);
-        this.isEditing = false;
-        alert('Tarea actualizada exitosamente');
+          const payload = {
+              titulo: this.editForm.titulo,
+              descripcion: this.editForm.descripcion,
+              fecha_vencimiento: this.editForm.fecha_vencimiento,
+              id_sector: this.editForm.id_sector,
+          };
+          await updateTask(this.editForm.id_tarea, payload);
+          // Luego de actualizar la tarea, recargamos la página
+          window.location.reload();
       } catch (error) {
-        console.error('Error updating task:', error);
-        alert('Error al actualizar la tarea');
+          console.error('Error updating task:', error);
+          alert('Error al actualizar la tarea');
       } finally {
-        this.loading = false;
+          this.loading = false;
       }
     },
 
@@ -232,18 +221,14 @@ export default {
       }
       this.loading = true;
       try {
-        // Asumimos que markTaskAsDone devuelve la tarea actualizada
-        const updatedTask = await markTaskAsDone(this.task.id_tarea); // Asegúrate que markTaskAsDone esté correcta
-        this.task.estado = updatedTask.estado; // Actualiza el estado local
-        this.editForm.estado = updatedTask.estado; // Y el de editForm
-
-        this.$emit('task-completed', this.task.id_tarea); // O emite la tarea actualizada
-        alert('Tarea marcada como completada');
+          await markTaskAsDone(this.task.id_tarea);
+          // Luego de marcarla como completada, recargamos la página
+          window.location.reload();
       } catch (error) {
-        console.error('no se pudo marcar como completada por:', error);
-        alert('Error al marcar la tarea como completada');
+          console.error('Error al marcar como completada:', error);
+          alert('Error al marcar la tarea como completada');
       } finally {
-        this.loading = false;
+          this.loading = false;
       }
     },
 

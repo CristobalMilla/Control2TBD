@@ -202,9 +202,11 @@ public class TareaRepository {
                 "ORDER BY COUNT(t.id_tarea) DESC " +
                 "LIMIT 1;";
         try (Connection conn = sql2o.open()) {
-            return conn.createQuery(sql)
+            Object result = conn.createQuery(sql)
                     .addParameter("id_usuario", id_usuario)
-                    .executeAndFetchFirst(Long.class);
+                    .executeScalar();
+            Long id_sector = result != null ? Long.parseLong(result.toString()) : null;
+            return id_sector;
         }
     }
     // 9) Funcion que devuelve el promedio de las distancias entre todas las tareas completadas y la ubicacion del usuario

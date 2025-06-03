@@ -1,13 +1,18 @@
 <script setup>
 
 import { ref, onMounted } from 'vue';
+import axios from 'axios'
 //Pregunta 8
-import { getSectorMostCompletedByUser } from "@/api/tasks";
 const sectorMostCompleted = ref(null);
 onMounted(async () => {
   // Pregunta 8
-  const response = await getSectorMostCompletedByUser();
-  sectorMostCompleted.value = response;
+  const usuario = JSON.parse(localStorage.getItem("user"));
+  const response = await axios.get('http://localhost:8000/api/tareas/SectorMostCompletedByUser/' + usuario.id_usuario, {
+      headers: {
+        Authorization: `Bearer ${usuario.token}`,
+      },
+    })
+  sectorMostCompleted.value = response.data;
 });
 </script>
 

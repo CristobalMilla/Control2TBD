@@ -1,37 +1,37 @@
-import axiosInstance from "./axiosInstance";
+import axiosTasks from "./axiosTask";
 
 export const getTasks = async () => {
-  const response = await axiosInstance.get("/tareas");
+  const response = await axiosTasks.get("/tareas");
   return response.data;
 };
 
 export const getTaskById = async (taskId) => {
-  const response = await axiosInstance.get(`/tareas/${taskId}`);
+  const response = await axiosTasks.get(`/tareas/${taskId}`);
   return response.data; // Asegúrate de retornar los datos
 }
 
 export const createTask = async (taskData) => {
-  const response = await axiosInstance.post("/tareas", taskData);
+  const response = await axiosTasks.post("/tareas", taskData);
   return response.data;
 };
 
 // Puedes incluir consultas específicas para las preguntas del punto 6:
 export const getTasksBySector = async (sectorId) => {
-  const response = await axiosInstance.get(`/statistics/tasks-by-sector/${sectorId}`);
+  const response = await axiosTasks.get(`/statistics/tasks-by-sector/${sectorId}`);
   return response.data;
 };
 
 //Pregunta 7
 
 export const getAllTasksPerUserPerSector = async () => {
-  const response = await axiosInstance.get("/tareas/allTareasPerUserPerSector");
+  const response = await axiosTasks.get("/tareas/allTareasPerUserPerSector");
   return response.data; // Asegúrate de que el backend devuelve los datos en el formato esperado
 };
 
 //Pregunta 8
 
 export const getSectorMostCompletedByUser = async (id_usuario) => {
-  const response = await axiosInstance.get(
+  const response = await axiosTasks.get(
     `/tareas/SectorMostCompletedByUser`,
     { params: { id_usuario } }
   );
@@ -41,7 +41,7 @@ export const getSectorMostCompletedByUser = async (id_usuario) => {
 //Pregunta 9
 
 export const getAverageCompletedDistance = async (id_usuario) => {
-  const response = await axiosInstance.get(
+  const response = await axiosTasks.get(
     `/tareas/AverageCompletedUser`,
     { params: { id_usuario } }
   );
@@ -50,7 +50,7 @@ export const getAverageCompletedDistance = async (id_usuario) => {
 
 export const getAverageDistance = async (userId) => {
     try {
-        const response = await axiosInstance.get(`/tareas/promedio-distancia/${userId}`);
+        const response = await axiosTasks.get(`/tareas/promedio-distancia/${userId}`);
         return response.data;
     } catch (error) {
         console.error('Error al obtener el promedio de distancia:', error);
@@ -60,17 +60,23 @@ export const getAverageDistance = async (userId) => {
 
 export const markTaskAsDone = async (taskId) => {
   // Corregir el endpoint para que coincida con el backend
-  const response = await axiosInstance.put(`/tareas/${taskId}/complete`);
+  const response = await axiosTasks.put(`/tareas/${taskId}/complete`);
   return response.data;
 }
 
 export const updateTask = async (taskId, taskData) => {
-  const response = await axiosInstance.put(`/tareas/${taskId}`, taskData);
+  const response = await axiosTasks.put(`/tareas/${taskId}`, taskData);
   return response.data;
 };
 
 export const deleteTask = async (taskId) => {
-  const response = await axiosInstance.delete(`/tareas/${taskId}`);
+  const response = await axiosTasks.delete(`/tareas/${taskId}`);
+  return response.data;
+};
+
+// Asegúrate de que esta función esté presente y exportada
+export const getUserTasks = async (userId) => {
+  const response = await axiosTasks.get(`/tareas/usuario/${userId}`);
   return response.data;
 };
 

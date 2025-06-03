@@ -4,11 +4,9 @@ import { ref, onMounted } from 'vue';
 //Pregunta 8
 import { getSectorMostCompletedByUser } from "@/api/tasks";
 const sectorMostCompleted = ref(null);
-const userId = JSON.parse(localStorage.getItem("user")).id;
-
 onMounted(async () => {
   // Pregunta 8
-  const response = await getSectorMostCompletedByUser(userId);
+  const response = await getSectorMostCompletedByUser();
   sectorMostCompleted.value = response;
 });
 </script>

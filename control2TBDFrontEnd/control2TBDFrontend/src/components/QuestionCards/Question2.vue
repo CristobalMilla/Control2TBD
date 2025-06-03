@@ -34,7 +34,6 @@ const getSector = async (sectorId) => {
         Authorization: `Bearer ${usuario.token}`,
       },
     })
-
     sector.value = response.data
   } catch (error) {
     console.error("Error obteniendo sector", error)
@@ -64,7 +63,7 @@ const initMap = async () => {
         sector.value.ubicacion.coordinates[0][0][1],
         sector.value.ubicacion.coordinates[0][0][0],
         ];
-        map.value.setView(sectorCenter, 17);
+        map.value.setView(sectorCenter, 14);
 
         const geoJSON = {
         type: "Feature",

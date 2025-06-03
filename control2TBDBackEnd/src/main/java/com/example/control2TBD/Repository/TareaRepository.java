@@ -293,25 +293,22 @@ public class TareaRepository {
     public Long getSectorCercanoConMasTareasCompletadas(Long id_usuario){
         try (Connection conn = sql2o.open()) {
             String query = "SELECT id_sector " +
-                           "FROM sector_entity " +
-                           "WHERE id_sector " +
-                           "IN (SELECT id_sector " +
-                               "FROM (SELECT s.id_sector, COUNT(*) tareas_completadas " +
+                           "FROM (SELECT s.id_sector, COUNT(*) tareas_completadas " +
                                      "FROM tarea t " +
                                      "INNER JOIN sector_entity s ON s.id_sector = t.id_sector " +
                                      "WHERE ST_DWithin(s.ubicacion, (SELECT ubicacion FROM usuario_entity WHERE id_usuario = :id_usuario), 2000) " +
                                      "AND t.estado = 'Completada' " +
                                      "GROUP BY s.id_sector " +
                                      "ORDER BY tareas_completadas DESC " +
-                                     "LIMIT 1))";
-            Long id_sector = conn.createQuery(query)
+                                     "LIMIT 1)";
+            Object result = conn.createQuery(query)
                     .addParameter("id_usuario", id_usuario)
-                    .executeAndFetchFirst(Long.class);
-
+                    .executeScalar();
+            Long id_sector = result != null ? Long.parseLong(result.toString()) : null;
             return id_sector;
         }
         catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             return null;
         }
     }

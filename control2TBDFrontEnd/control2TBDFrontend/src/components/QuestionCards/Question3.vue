@@ -15,7 +15,6 @@ const getSector = async () => {
         Authorization: `Bearer ${usuario.token}`,
       },
     })
-    console.log(response)
     if(response.data != ""){
         sectorConMasTareasCompletadas.value = response.data;
         SectorCargado.value = true;
@@ -43,12 +42,12 @@ const initMap = async () => {
         attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map.value);
 
-    if (sectorConMasTareasCompletadas.value.ubicacion) {
+    if (SectorCargado.value) {
         const sectorCenter = [
         sectorConMasTareasCompletadas.value.ubicacion.coordinates[0][0][1],
         sectorConMasTareasCompletadas.value.ubicacion.coordinates[0][0][0],
         ];
-        map.value.setView(sectorCenter, 17);
+        map.value.setView(sectorCenter, 15);
 
         const geoJSON = {
         type: "Feature",
@@ -66,7 +65,7 @@ onMounted(async () => {
   await getSector()
 })
 
-watch( async () => {
+watch(sectorConMasTareasCompletadas, async () => {
     await initMap()
   
 })
@@ -76,7 +75,7 @@ watch( async () => {
         <v-row>
         <v-col v-if="SectorCargado" cols="12" md="4">
             <div class="text-h4">
-                Sector: {{masCercana.id_sector}}
+                Sector: {{sectorConMasTareasCompletadas.id_sector}}
             </div>
         </v-col> 
         <v-col v-else>

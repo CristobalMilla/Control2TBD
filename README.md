@@ -50,7 +50,9 @@ Usa el Maven Wrapper incluido en el proyecto:
 ```bash
 .\mvnw spring-boot:run
 ```
-En caso de que esto no funcione, simplemente establecer las variables en el application.properties del backend.
+
+En caso de que esto no funcione, simplemente establecer las variables en el `application.properties` del backend.
+
 ---
 
 ## 3️⃣ Frontend
@@ -70,5 +72,4 @@ npm run dev
 ```
 
 ---
-
 

@@ -31,35 +31,3 @@ CREATE TABLE tarea (
     CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES usuario_entity(id_usuario),
     CONSTRAINT fk_sector FOREIGN KEY (id_sector) REFERENCES sector_entity(id_sector)
 );
-
--- Se insertan los usuarios
-INSERT INTO usuario_entity (nickname, contrasenia, ubicacion, rol) VALUES
-('Juan', 'adminPass', ST_GeomFromText('POINT(-70.6483 -33.4569)', 4326), 'CLIENTE'),
-('Esmeralda', 'trabajadorPass', ST_GeomFromText('POINT(-70.6600 -33.4400)', 4326), 'CLIENTE'),
-('Eduardo', 'clientePass', ST_GeomFromText('POINT(-70.6200 -33.4300)', 4326), 'CLIENTE');
-
--- Inserción de datos de prueba para la tabla de tareas
-INSERT INTO tarea (titulo, descripcion, fecha_vencimiento, id_usuario, id_sector, estado)
-VALUES
-  ('Tarea 1', 'Descripción de la tarea 1', '2025-06-21', 1, 1, 'Completada'),
-  ('Tarea 2', 'Descripción de la tarea 2', '2025-06-25', 3, 2, 'Pendiente'),
-  ('Tarea 3', 'Descripción de la tarea 3', '2025-06-26', 2, 3, 'Completada'),
-  ('Tarea 4', 'Descripción de la tarea 4', '2025-06-28', 3, 4, 'Pendiente'),
-  ('Tarea 5', 'Descripción de la tarea 5', '2025-06-04', 2, 5, 'Pendiente'),
-  ('Tarea 6', 'Descripción de la tarea 6', '2025-07-02', 2, 6, 'Pendiente'),
-  ('Tarea 7', 'Descripción de la tarea 7', '2025-06-08', 3, 7, 'Completada'),
-  ('Tarea 8', 'Descripción de la tarea 8', '2025-07-01', 2, 8, 'Pendiente'),
-  ('Tarea 9', 'Descripción de la tarea 9', '2025-07-02', 3, 9, 'Pendiente'),
-  ('Tarea 10', 'Descripción de la tarea 10', '2025-07-01', 2, 10, 'Pendiente'),
-  ('Tarea 11', 'Descripción de la tarea 11', '2025-06-15', 1, 11, 'Pendiente'),
-  ('Tarea 12', 'Descripción de la tarea 12', '2025-06-15', 1, 12, 'Pendiente'),
-  ('Tarea 13', 'Descripción de la tarea 13', '2025-06-24', 2, 13, 'Pendiente'),
-  ('Tarea 14', 'Descripción de la tarea 14', '2025-06-21', 3, 14, 'Pendiente'),
-  ('Tarea 15', 'Descripción de la tarea 15', '2025-06-22', 3, 15, 'Pendiente'),
-  ('Tarea 16', 'Descripción de la tarea 16', '2025-07-01', 3, 16, 'Pendiente'),
-  ('Tarea 17', 'Descripción de la tarea 17', '2025-06-23', 1, 17, 'Pendiente'),
-  ('Tarea 18', 'Descripción de la tarea 18', '2025-06-17', 1, 18, 'Completada'),
-  ('Tarea 19', 'Descripción de la tarea 19', '2025-06-04', 3, 19, 'Pendiente'),
-  ('Tarea 20', 'Descripción de la tarea 20', '2025-06-22', 1, 20, 'Completada');
-
-

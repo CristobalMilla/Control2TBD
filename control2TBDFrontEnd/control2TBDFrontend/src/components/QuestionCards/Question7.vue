@@ -1,31 +1,54 @@
+<script setup>
+
+import { ref, onMounted } from 'vue';
+//Pregunta 7
+import { getAllTasksPerUserPerSector } from "@/api/tasks";
+
+const tasksBySectorAndUser = ref([]);
+
+onMounted(async () => {
+  // Pregunta 7
+  const response = await getAllTasksPerUserPerSector();
+  tasksBySectorAndUser.value = response;
+});
+
+</script>
+
+
+
 <template>
-  <div>
-    <v-list v-if="tasks.length > 0">
-      <v-list-item
-        v-for="task in tasks"
-        :key="task.id"
-        class="py-4 px-6"
-      >
-        <v-list-item-content>
-          <v-list-item-title>{{ task.title }}</v-list-item-title>
-          <v-list-item-subtitle>{{ task.sector }}</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
-    <div v-else class="text-center text-grey pa-6">
-      No hay tareas disponibles para este sector.
-    </div>
-  </div>
+  <v-container>
+    <v-card class="sector-tasks-section mt-8" elevation="2">
+      <v-card-title class="d-flex align-center pa-6 bg-grey-lighten-4">
+        <v-icon size="28" color="primary" class="mr-3">mdi-format-list-bulleted</v-icon>
+        <span class="text-h5">Tareas por Sector</span>
+      </v-card-title>
+      <v-card-text>
+      <div>
+        <v-list v-if="tasksBySectorAndUser.length > 0">
+          <v-list-item
+            v-for="task in tasksBySectorAndUser"
+            :key="task.id_sector"
+            class="py-4 px-6"
+            >
+            <v-list-item-content>
+              <v-list-item-title>{{ task.id_sector }}</v-list-item-title>
+              <v-list-item-subtitle>{{ task.id_usuario }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ task.numero_de_tareas }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <div v-else class="text-center text-grey pa-6">
+          No hay tareas disponibles para este sector.
+        </div>
+      </div>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
 export default {
   name: "Question7",
-  props: {
-    tasks: {
-      type: Array,
-      default: () => [],
-    },
-  },
 };
 </script>

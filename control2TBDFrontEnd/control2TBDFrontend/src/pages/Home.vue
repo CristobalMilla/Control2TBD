@@ -148,7 +148,7 @@
         </v-card>
       </v-container>
 
-      <!-- Card de la Pregunta 7 -->
+      <!--
       <v-container>
         <v-card class="sector-tasks-section mt-8" elevation="2">
           <v-card-title class="d-flex align-center pa-6 bg-grey-lighten-4">
@@ -160,6 +160,7 @@
           </v-card-text>
         </v-card>
       </v-container>
+      -->
       <!-- Card de la Pregunta 8 -->
       <v-container>
         <v-card class="mt-8">
@@ -215,7 +216,6 @@ export default {
       pendingTasks: 0,
       completedTasks: 0,
       recentTasks: [],
-      tasksBySectorAndUser: [],
       sectorMostCompleted: null,
       averageCompletedDistance: null,
     }
@@ -258,8 +258,8 @@ export default {
         const userId = JSON.parse(localStorage.getItem("user")).id;
 
         // Pregunta 7
-        const tasksPerSector = await getAllTasksPerUserPerSector();
-        this.sectorTasks = tasksPerSector;
+        //const tasksPerSector = await getAllTasksPerUserPerSector();
+        //this.sectorTasks = tasksPerSector;
         //Pregunta 8
         // Obtener el sector con más tareas completadas
         this.sectorMostCompleted = await getSectorMostCompletedByUser(userId);

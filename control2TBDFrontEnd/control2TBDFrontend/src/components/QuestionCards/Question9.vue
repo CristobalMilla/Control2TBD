@@ -1,3 +1,17 @@
+<script setup>
+
+import { ref, onMounted } from 'vue';
+import { getAverageCompletedDistance } from "@/api/tasks";
+
+const averageDistance = ref(null);
+onMounted(async () => {
+  // Pregunta 8
+  const response = await getAverageCompletedDistance();
+  averageDistance.value = response;
+});
+
+</script>
+
 <template>
   <div>
     <v-card class="average-distance-card pa-6">

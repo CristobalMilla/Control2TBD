@@ -107,40 +107,43 @@
           </v-card-text>
         </v-card>
 
-        <!-- Card de la Pregunta 7 -->
-        <v-container>
-          <v-card class="sector-tasks-section mt-8" elevation="2">
-            <v-card-title class="d-flex align-center pa-6 bg-grey-lighten-4">
-              <v-icon size="28" color="primary" class="mr-3">mdi-format-list-bulleted</v-icon>
-              <span class="text-h5">Tareas por Sector</span>
-            </v-card-title>
-            <v-card-text>
-              <Question7 :tasks="sectorTasks" />
-            </v-card-text>
-          </v-card>
-        </v-container>
-        <!-- Card de la Pregunta 8 -->
-        <v-container>
-          <v-card class="mt-8">
-            <v-card-title>
-              <span class="text-h5">Sector con Más Tareas Completadas</span>
-            </v-card-title>
-            <v-card-text>
-              <Question8 :sectorId="sectorMostCompleted" />
-            </v-card-text>
-          </v-card>
-        </v-container>
-        <!-- Card de la pregunta 9 -->
-        <v-container>
-          <v-card class="mt-8">
-            <v-card-title>
-              <span class="text-h5">Promedio de Distancia a Tareas Completadas</span>
-            </v-card-title>
-            <v-card-text>
-              <Question9 :averageDistance="averageCompletedDistance" />
-            </v-card-text>
-          </v-card>
-        </v-container>
+      <!--
+      <v-container>
+        <v-card class="sector-tasks-section mt-8" elevation="2">
+          <v-card-title class="d-flex align-center pa-6 bg-grey-lighten-4">
+            <v-icon size="28" color="primary" class="mr-3">mdi-format-list-bulleted</v-icon>
+            <span class="text-h5">Tareas por Sector</span>
+          </v-card-title>
+          <v-card-text>
+            <Question7 :tasks="sectorTasks" />
+          </v-card-text>
+        </v-card>
+      </v-container>
+      -->
+      <!-- Card de la Pregunta 8 
+      <v-container>
+        <v-card class="mt-8">
+          <v-card-title>
+            <span class="text-h5">Sector con Más Tareas Completadas</span>
+          </v-card-title>
+          <v-card-text>
+            <Question8 :sectorId="sectorMostCompleted" />
+          </v-card-text>
+        </v-card>
+      </v-container>
+      -->
+      <!-- Card de la pregunta 9 
+      <v-container>
+        <v-card class="mt-8">
+          <v-card-title>
+            <span class="text-h5">Promedio de Distancia a Tareas Completadas</span>
+          </v-card-title>
+          <v-card-text>
+            <Question9 :averageDistance="averageCompletedDistance" />
+          </v-card-text>
+        </v-card>
+      </v-container>
+      -->
 
       </v-container>
     </v-main>
@@ -163,9 +166,6 @@ export default {
   components: {
     NotificationBadge,
     TaskCard,
-    Question7,
-    Question8,
-    Question9,
   },
   data() {
     return {
@@ -173,9 +173,6 @@ export default {
       pendingTasks: 0,
       completedTasks: 0,
       recentTasks: [],
-      sectorTasks: [],
-      sectorMostCompleted: null,
-      averageCompletedDistance: null,
     }
   },
   computed: {
